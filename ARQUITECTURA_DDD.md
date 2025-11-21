@@ -1,8 +1,8 @@
 # Arquitectura DDD + Hexagonal - Microservicio Auth
 
-## 📋 Resumen del Refactor
+## 📋 Introducción
 
-Este proyecto ha sido refactorizado de un patrón CRUD anémico a una **arquitectura DDD (Domain-Driven Design) + Hexagonal**, siguiendo las mejores prácticas de desarrollo empresarial.
+Este microservicio implementa una **arquitectura DDD (Domain-Driven Design) + Hexagonal**, siguiendo las mejores prácticas de desarrollo empresarial. La arquitectura está diseñada para ser escalable, mantenible y testeable.
 
 ## 🏗️ Estructura del Proyecto
 
@@ -97,9 +97,11 @@ src/
 └── app.module.ts
 ```
 
-## 🎯 Principios Aplicados
+## 🎯 Principios Arquitectónicos
 
 ### 1. **Separación de Capas**
+
+El proyecto está organizado en capas con responsabilidades bien definidas:
 
 - **Dominio**: Lógica de negocio pura, sin dependencias de frameworks
 - **Aplicación**: Casos de uso que orquestan la lógica de dominio
@@ -108,26 +110,46 @@ src/
 
 ### 2. **Patrón Hexagonal (Puertos y Adaptadores)**
 
+La arquitectura hexagonal permite la independencia del dominio respecto a la infraestructura:
+
 ```typescript
-// Puerto (en dominio)
+// Puerto (en dominio) - Define QUÉ se necesita
 export interface IUserRepository {
   create(user: User, transaction?: any): Promise<User>;
   findById(id: string): Promise<User | null>;
+  findAll(): Promise<User[]>;
 }
 
-// Adaptador (en infraestructura)
+// Adaptador (en infraestructura) - Define CÓMO se implementa
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
-  // Implementación con Sequelize
+  constructor(
+    @InjectModel(UserSequelizeEntity)
+    private readonly userModel: typeof UserSequelizeEntity,
+  ) {}
+
+  async create(user: User, transaction?: any): Promise<User> {
+    // Implementación con Sequelize
+    const created = await this.userModel.create({...}, transaction);
+    return User.fromPersistence(created);
+  }
 }
 ```
 
 ### 3. **Entidades de Dominio Ricas**
 
-Las entidades tienen comportamiento, no son solo DTOs:
+Las entidades contienen comportamiento y reglas de negocio, no son simples contenedores de datos:
 
 ```typescript
 export class User {
+  constructor(
+    private readonly _id: string,
+    private _name: string,
+    private readonly _authId: string,
+    private _role: UserRole,
+  ) {}
+
+  // Comportamiento del dominio
   changeName(newName: string): void {
     if (!newName || newName.trim().length === 0) {
       throw new Error('El nombre no puede estar vacío');
@@ -135,21 +157,45 @@ export class User {
     this._name = newName;
   }
 
+  changeRole(newRole: UserRole): void {
+    this._role = newRole;
+  }
+
   isAdmin(): boolean {
     return this._role === UserRole.ADMIN;
+  }
+
+  // Factory method
+  static create(id: string, name: string, authId: string, role: UserRole): User {
+    if (!id || !name || !authId) {
+      throw new Error('Los campos id, name y authId son requeridos');
+    }
+    return new User(id, name, authId, role);
   }
 }
 ```
 
 ### 4. **Casos de Uso**
 
-Cada operación de negocio es un caso de uso específico:
+Cada operación de negocio se encapsula en un caso de uso específico:
 
 ```typescript
 @Injectable()
 export class CreateUserUseCase {
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
+  ) {}
+
   async execute(command: CreateUserCommand, transaction?: any): Promise<User> {
-    const user = User.create(uuidv4(), command.name, command.authId, command.role);
+    // Lógica de aplicación clara y específica
+    const user = User.create(
+      uuidv4(),
+      command.name,
+      command.authId,
+      command.role || UserRole.USER,
+    );
+    
     return await this.userRepository.create(user, transaction);
   }
 }
@@ -157,47 +203,239 @@ export class CreateUserUseCase {
 
 ### 5. **Excepciones de Dominio**
 
-Errores específicos del dominio en lugar de HTTP exceptions:
+Los errores de negocio se modelan como excepciones específicas del dominio:
 
 ```typescript
+// Excepción base de dominio
+export abstract class DomainException extends Error {
+  constructor(
+    public readonly code: string,
+    public readonly message: string,
+    public readonly details?: any,
+  ) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+// Excepción específica
 export class UserNotFoundException extends DomainException {
   constructor(id?: string) {
-    super('USER_NOT_FOUND', `Usuario con id ${id} no encontrado`);
+    super(
+      'USER_NOT_FOUND',
+      id ? `Usuario con id ${id} no encontrado` : 'Usuario no encontrado',
+    );
   }
 }
 ```
 
-## 🔧 Mejoras Implementadas (Prioridad P0)
+### 6. **Servicios de Dominio**
 
-### ✅ Arquitectura
+Para lógica que no pertenece a una entidad específica:
 
-- [x] Separación en capas (domain/application/infrastructure)
-- [x] Entidades de dominio puras (sin decoradores Sequelize)
-- [x] Interfaces de repositorio (puertos)
-- [x] Implementaciones de repositorio (adaptadores)
-- [x] Casos de uso para lógica de aplicación
-- [x] Controllers delgados (solo delegación)
+```typescript
+@Injectable()
+export class PasswordService {
+  private readonly SALT_ROUNDS = 10;
 
-### ✅ Infraestructura
+  async hash(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(this.SALT_ROUNDS);
+    return await bcrypt.hash(password, salt);
+  }
 
-- [x] Pool de conexiones de DB optimizado
-- [x] Migraciones versionadas con Sequelize CLI
-- [x] Índices críticos para performance
-- [x] Redis configurado para caché
-- [x] TransactionService para manejo de transacciones
-- [x] DomainExceptionFilter para mapeo de errores
+  async compare(password: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
+  }
 
-### ✅ Dependencias
+  validate(password: string): boolean {
+    return password && password.length >= 6;
+  }
+}
+```
 
-- [x] `@nestjs/cache-manager`: Gestión de caché
-- [x] `cache-manager-redis-yet`: Store de Redis
-- [x] `ioredis`: Cliente de Redis
-- [x] `uuid`: Generación de IDs
-- [x] Scripts de migración en package.json
+## 🔄 Flujo de una Petición
 
-## 🚀 Cómo Usar
+```
+1. HTTP Request
+   ↓
+2. Controller (API Layer)
+   ├─ Validación de DTO
+   ├─ Delegación a Caso de Uso
+   ↓
+3. Use Case (Application Layer)
+   ├─ Orquestación de lógica
+   ├─ Llamadas a repositorios
+   ├─ Llamadas a entidades de dominio
+   ↓
+4. Repository (Infrastructure Layer)
+   ├─ Implementación con Sequelize
+   ├─ Conversión entre entidades de dominio y persistencia
+   ↓
+5. Database
+   ↓
+6. Response (entidad de dominio → DTO → JSON)
+```
 
-### Comandos Disponibles
+## 💡 Ejemplo Completo: Registro de Usuario
+
+### 1. Controller (API Layer)
+
+```typescript
+@Controller('auth')
+export class AuthController {
+  constructor(
+    private readonly createAuthUseCase: CreateAuthUseCase,
+    private readonly transactionService: TransactionService,
+  ) {}
+
+  @Post('/signup')
+  async create(@Body() createAuthDto: CreateAuthDto) {
+    return await this.transactionService.executeInTransaction(async (t) => {
+      await this.createAuthUseCase.execute(
+        {
+          email: createAuthDto.email,
+          password: createAuthDto.password,
+          name: createAuthDto.name,
+          role: createAuthDto.role,
+        },
+        { transaction: t },
+      );
+      return { message: 'Usuario registrado correctamente' };
+    });
+  }
+}
+```
+
+### 2. Use Case (Application Layer)
+
+```typescript
+@Injectable()
+export class CreateAuthUseCase {
+  constructor(
+    @Inject(AUTH_REPOSITORY)
+    private readonly authRepository: IAuthRepository,
+    private readonly passwordService: PasswordService,
+    private readonly createUserUseCase: CreateUserUseCase,
+  ) {}
+
+  async execute(command: CreateAuthCommand, transaction?: any): Promise<Auth> {
+    // Validación
+    if (!this.passwordService.validate(command.password)) {
+      throw new Error('La contraseña debe tener al menos 6 caracteres');
+    }
+
+    // Hash del password (servicio de dominio)
+    const hashedPassword = await this.passwordService.hash(command.password);
+
+    // Creación de entidad de dominio
+    const auth = Auth.create(uuidv4(), command.email, hashedPassword);
+
+    // Persistencia
+    const createdAuth = await this.authRepository.create(auth, transaction);
+
+    // Creación del usuario asociado
+    await this.createUserUseCase.execute(
+      {
+        name: command.name,
+        authId: createdAuth.id,
+        role: command.role || UserRole.USER,
+      },
+      transaction,
+    );
+
+    return createdAuth;
+  }
+}
+```
+
+### 3. Repository (Infrastructure Layer)
+
+```typescript
+@Injectable()
+export class AuthRepositoryImpl implements IAuthRepository {
+  constructor(
+    @InjectModel(AuthSequelizeEntity)
+    private readonly authModel: typeof AuthSequelizeEntity,
+  ) {}
+
+  async create(auth: Auth, transaction?: any): Promise<Auth> {
+    try {
+      // Conversión de dominio a persistencia
+      const created = await this.authModel.create(
+        {
+          id: auth.id,
+          email: auth.email,
+          password: auth.password,
+        },
+        transaction ? { transaction } : undefined,
+      );
+
+      // Conversión de persistencia a dominio
+      return Auth.fromPersistence({
+        id: created.id,
+        email: created.email,
+        password: created.password,
+        createdAt: created.createdAt,
+        updatedAt: created.updatedAt,
+      });
+    } catch (error) {
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new EmailAlreadyExistsException(auth.email);
+      }
+      throw new Error(`Error al crear auth: ${error.message}`);
+    }
+  }
+}
+```
+
+## 🏛️ Características Implementadas
+
+### Infraestructura
+
+- ✅ **Pool de Conexiones Optimizado**: max 20, min 5 conexiones
+- ✅ **Migraciones Versionadas**: Control de cambios de base de datos
+- ✅ **Índices Críticos**: Optimización de queries (authId, email, role)
+- ✅ **Redis Cache**: Sistema de caché configurado
+- ✅ **TransactionService**: Manejo centralizado de transacciones
+- ✅ **DomainExceptionFilter**: Mapeo de excepciones de dominio a HTTP
+
+### Seguridad
+
+- ✅ **JWT Authentication**: Autenticación basada en tokens
+- ✅ **Password Hashing**: bcrypt con salt rounds configurables
+- ✅ **Guards**: JwtAuthGuard, LocalAuthGuard, RolesGuard
+- ✅ **Validation**: class-validator en todos los DTOs
+
+### Bounded Contexts
+
+- ✅ **Users**: Gestión de usuarios del sistema
+- ✅ **Auth**: Autenticación y autorización
+
+## 🚀 Uso de la Arquitectura
+
+### Variables de Entorno
+
+```env
+# Base de datos
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_DATABASE=auth_db
+
+# JWT
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=24h
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Servidor
+PORT=3000
+```
+
+### Comandos
 
 ```bash
 # Desarrollo
@@ -208,163 +446,88 @@ npm run migration:generate -- nombre-migracion
 npm run migration:run
 npm run migration:undo
 
-# Sync de base de datos (solo desarrollo)
-npm run sync:alter
-npm run sync:force
-
 # Tests
 npm run test
 npm run test:e2e
+
+# Build
+npm run build
 ```
 
-### Variables de Entorno
+## 🎓 Beneficios de esta Arquitectura
 
-Agregar al `.env`:
+### 1. **Testabilidad**
+- Lógica de dominio pura, sin dependencias de frameworks
+- Fácil crear mocks de repositorios
+- Tests unitarios rápidos y confiables
 
-```env
-# Base de datos existentes
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=user
-DB_PASSWORD=password
-DB_DATABASE=auth_db
+### 2. **Mantenibilidad**
+- Código organizado por responsabilidades
+- Fácil localizar y modificar funcionalidad
+- Cambios aislados en capas específicas
 
-# JWT
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=24h
+### 3. **Escalabilidad**
+- Fácil agregar nuevos bounded contexts
+- Infraestructura preparada para crecer
+- Separación clara de concerns
 
-# Redis (nuevas)
-REDIS_HOST=localhost
-REDIS_PORT=6379
+### 4. **Flexibilidad**
+- Cambiar de ORM sin afectar el dominio
+- Cambiar de framework sin afectar la lógica
+- Agregar nuevos adaptadores fácilmente
 
-# Servidor
-PORT=3000
+### 5. **Expresividad**
+- El código refleja el lenguaje del negocio
+- Entidades con comportamiento significativo
+- Casos de uso claros y específicos
+
+### 6. **Performance**
+- Pool de conexiones optimizado
+- Índices de base de datos bien diseñados
+- Sistema de caché implementado
+
+## 🔮 Extensibilidad
+
+La arquitectura está preparada para crecer con nuevos bounded contexts:
+
+```
+src/modules/
+├── users/        ✅ Implementado
+├── auth/         ✅ Implementado
+├── accounts/     🔜 Futuro
+├── balance/      🔜 Futuro
+├── discounts/    🔜 Futuro
+├── pickup/       🔜 Futuro
+└── billings/     🔜 Futuro
 ```
 
-### Ejemplo de Uso de Casos de Uso
+Cada nuevo contexto seguirá la misma estructura de capas (domain/application/infrastructure).
 
-```typescript
-// En un controller
-@Post('/signup')
-async create(@Body() createAuthDto: CreateAuthDto) {
-  return await this.transactionService.executeInTransaction(async (t) => {
-    await this.createAuthUseCase.execute(
-      {
-        email: createAuthDto.email,
-        password: createAuthDto.password,
-        name: createAuthDto.name,
-        role: createAuthDto.role,
-      },
-      { transaction: t },
-    );
-    return { message: 'Usuario registrado correctamente' };
-  });
-}
-```
+## 📚 Principios SOLID
 
-## 📊 Comparación: Antes vs Después
+### Single Responsibility
+Cada clase tiene una única razón para cambiar.
 
-### Antes (Patrón CRUD Anémico)
+### Open/Closed
+Abierto para extensión (nuevos casos de uso), cerrado para modificación.
 
-```typescript
-// Controller gordo
-@Post('/signup')
-async create(@Body() createAuthDto: CreateAuthDto) {
-  await this.sequelize.transaction(async (t) => {
-    const transactionHost = { transaction: t };
-    return await this.authService.create(createAuthDto, transactionHost);
-  });
-}
+### Liskov Substitution
+Las interfaces de repositorio son intercambiables.
 
-// Service con lógica mezclada
-async create(createAuthDto: CreateAuthDto, transactionHost: TransactionHost) {
-  const password = await this.hashPassword(createAuthDto.password);
-  const auth = await this.repository.create(createAuthDto.email, password, transactionHost);
-  await this.userService.create(createAuthDto.name, auth.id, transactionHost);
-}
+### Interface Segregation
+Interfaces específicas por dominio.
 
-// Repository que lanza HTTP exceptions
-async create(email: string, password: string, transactionHost: TransactionHost) {
-  try {
-    return await this.authRepository.create({ email, password }, transactionHost);
-  } catch (error) {
-    throw new HttpException('EMAIL_MUST_BE_UNIQUE', 400);
-  }
-}
-```
+### Dependency Inversion
+Las capas superiores dependen de abstracciones, no de implementaciones.
 
-### Después (DDD + Hexagonal)
+## 🔗 Referencias
 
-```typescript
-// Controller delgado
-@Post('/signup')
-async create(@Body() createAuthDto: CreateAuthDto) {
-  return await this.transactionService.executeInTransaction(async (t) => {
-    await this.createAuthUseCase.execute(
-      {
-        email: createAuthDto.email,
-        password: createAuthDto.password,
-        name: createAuthDto.name,
-        role: createAuthDto.role,
-      },
-      { transaction: t },
-    );
-    return { message: 'Usuario registrado correctamente' };
-  });
-}
-
-// Caso de uso con lógica clara
-async execute(command: CreateAuthCommand, transaction?: any): Promise<Auth> {
-  if (!this.passwordService.validate(command.password)) {
-    throw new Error('La contraseña debe tener al menos 6 caracteres');
-  }
-  const hashedPassword = await this.passwordService.hash(command.password);
-  const auth = Auth.create(uuidv4(), command.email, hashedPassword);
-  const createdAuth = await this.authRepository.create(auth, transaction);
-  await this.createUserUseCase.execute(createUserCommand, transaction);
-  return createdAuth;
-}
-
-// Repository que lanza excepciones de dominio
-async create(auth: Auth, transaction?: any): Promise<Auth> {
-  try {
-    const created = await this.authModel.create({ ... }, transaction);
-    return Auth.fromPersistence(created);
-  } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      throw new EmailAlreadyExistsException(auth.email);
-    }
-    throw new Error(`Error al crear auth: ${error.message}`);
-  }
-}
-```
-
-## 🎓 Beneficios de la Nueva Arquitectura
-
-1. **Testabilidad**: Lógica de dominio pura, fácil de testear sin frameworks
-2. **Mantenibilidad**: Código organizado por responsabilidades claras
-3. **Escalabilidad**: Fácil agregar nuevos bounded contexts
-4. **Flexibilidad**: Cambiar infraestructura (DB, caché) sin afectar dominio
-5. **Expresividad**: El código refleja el lenguaje del negocio
-6. **Performance**: Pool de conexiones, índices y caché optimizados
-
-## 🔮 Próximos Pasos (Prioridad P1)
-
-- [ ] Implementar módulo SQS para eventos de dominio
-- [ ] Agregar idempotencia en endpoints críticos
-- [ ] Mejorar logging con correlation_id
-- [ ] Migrar a Fastify para mejor performance
-- [ ] Implementar paginación en listados
-- [ ] Crear módulos de bounded contexts (accounts, balance, etc.)
-
-## 📚 Referencias
-
-- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
-- [Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Domain-Driven Design - Eric Evans](https://www.domainlanguage.com/ddd/)
+- [Hexagonal Architecture - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
 
 ---
 
-**Nota**: Este refactor establece las bases para un microservicio escalable y mantenible. La arquitectura está preparada para crecer con nuevos bounded contexts y funcionalidades sin comprometer la calidad del código.
-
+**Esta arquitectura proporciona una base sólida y profesional para un microservicio escalable, mantenible y de alta calidad.**
