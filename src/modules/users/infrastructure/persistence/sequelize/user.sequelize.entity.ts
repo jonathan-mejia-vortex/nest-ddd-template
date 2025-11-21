@@ -3,16 +3,13 @@ import {
   BelongsTo,
   Column,
   DataType,
-  ForeignKey,
   Model,
-  PrimaryKey,
   Table,
 } from 'sequelize-typescript';
 import { AuthSequelizeEntity } from '../../../../auth/infrastructure/persistence/sequelize/auth.sequelize.entity';
 
 @Table({ tableName: 'users', timestamps: true })
 export class UserSequelizeEntity extends Model<UserSequelizeEntity> {
-  @PrimaryKey
   @Column({
     type: DataType.UUID,
     defaultValue: UUIDV4,
@@ -27,7 +24,6 @@ export class UserSequelizeEntity extends Model<UserSequelizeEntity> {
   @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'USER' })
   role: string;
 
-  @ForeignKey(() => AuthSequelizeEntity)
   @Column({ type: DataType.UUID, allowNull: false, unique: true })
   authId: string;
 

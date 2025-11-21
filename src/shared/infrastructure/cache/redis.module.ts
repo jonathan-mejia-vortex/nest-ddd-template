@@ -9,9 +9,11 @@ import { envs } from '../../../config/envs';
       isGlobal: true,
       useFactory: async () => ({
         store: await redisStore({
-          host: envs.redisHost,
-          port: envs.redisPort,
-          ttl: 3600, // TTL por defecto: 1 hora
+          socket: {
+            host: envs.redisHost,
+            port: envs.redisPort,
+          },
+          ttl: 3600000, // TTL en milisegundos: 1 hora
         }),
       }),
     }),
