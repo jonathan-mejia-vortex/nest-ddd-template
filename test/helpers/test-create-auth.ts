@@ -1,8 +1,9 @@
 import { Sequelize } from 'sequelize-typescript';
-
 import { INestApplication } from '@nestjs/common';
-
-import { AuthService } from '../../src/resources/auth/auth.service';
+import { CreateAuthUseCase } from '../../src/modules/auth/application/use-cases/create-auth.use-case';
+import { ValidateUserUseCase } from '../../src/modules/auth/application/use-cases/validate-user.use-case';
+import { LoginUseCase } from '../../src/modules/auth/application/use-cases/login.use-case';
+import { UserRole } from '../../src/modules/users/domain/entities/user.entity';
 
 /**
  * @description Creates email with the role that come in the params.
@@ -13,22 +14,27 @@ export async function createAuthAndGetToken(
   app: INestApplication,
   role: string,
 ): Promise<string> {
-  const authService = app.get(AuthService);
+  const createAuthUseCase = app.get(CreateAuthUseCase);
+  const validateUserUseCase = app.get(ValidateUserUseCase);
+  const loginUseCase = app.get(LoginUseCase);
+
   const transaction: any = await sequelize.transaction();
   const email = `${role}@gmail.com`;
   const password = '123123123';
-  await authService.create(
+
+  await createAuthUseCase.execute(
     {
       email,
       password,
       name: 'test',
+      role: role.toUpperCase() as UserRole,
     },
-    transaction,
+    { transaction },
   );
   await transaction.commit();
 
-  const user = await authService.validateUser(email, password);
+  const user = await validateUserUseCase.execute({ email, password });
+  const loginResponse = await loginUseCase.execute(user);
 
-  const loginResponse = await authService.login(user);
   return loginResponse.token;
 }

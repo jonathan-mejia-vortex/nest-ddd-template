@@ -13,7 +13,7 @@ describe('AuthController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/auth/signup')
         .send({ email: 'test@gmail.com', password: 'test123123', name: 'eze' })
-        .expect(400);
+        .expect(409);
     });
     it("Name can't be empty", () => {
       return request(app.getHttpServer())
@@ -39,13 +39,13 @@ describe('AuthController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/auth/login')
         .send({ email: 'another_test_email@gmail.com', password: 'test123123' })
-        .expect(404);
+        .expect(401);
     });
     it('Wrong password', () => {
       return request(app.getHttpServer())
         .post('/api/auth/login')
         .send({ email: 'test@gmail.com', password: 'wrong_password' })
-        .expect(400);
+        .expect(401);
     });
     it("Password can't be empty", () => {
       return request(app.getHttpServer())

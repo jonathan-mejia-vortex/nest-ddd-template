@@ -18,11 +18,15 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "sync:alter": "cross-env SYNC_TYPE=alter cross-env NODE_ENV=development ts-node src/sequelize/sync.ts",
-    "sync:force": "cross-env SYNC_TYPE=force cross-env NODE_ENV=development ts-node src/sequelize/sync.ts",
-    "sync:test": "cross-env SYNC_TYPE=force cross-env NODE_ENV=test ts-node src/sequelize/sync.ts --env test"
+    "sync:alter": "cross-env SYNC_TYPE=alter cross-env NODE_ENV=development ts-node src/db/sync.ts",
+    "sync:force": "cross-env SYNC_TYPE=force cross-env NODE_ENV=development ts-node src/db/sync.ts",
+    "sync:test": "cross-env SYNC_TYPE=force cross-env NODE_ENV=test ts-node src/db/sync.ts --env test",
+    "migration:generate": "sequelize-cli migration:generate --name",
+    "migration:run": "sequelize-cli db:migrate",
+    "migration:undo": "sequelize-cli db:migrate:undo"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^2.3.0",
     "@nestjs/common": "^11.0.14",
     "@nestjs/core": "^11.0.14",
     "@nestjs/jwt": "^11.0.0",
@@ -31,9 +35,12 @@
     "@nestjs/sequelize": "^11.0.0",
     "@nestjs/swagger": "^11.1.1",
     "bcrypt": "^5.1.1",
+    "cache-manager": "^5.2.4",
+    "cache-manager-redis-yet": "^4.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",
+    "ioredis": "^5.3.2",
     "joi": "^17.13.3",
     "mysql2": "^3.14.0",
     "passport": "^0.7.0",
@@ -43,7 +50,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "sequelize": "^6.37.7",
-    "sequelize-typescript": "^2.1.6"
+    "sequelize-typescript": "^2.1.6",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.6",
@@ -57,6 +65,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/sequelize": "^4.28.20",
     "@types/supertest": "^6.0.3",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
     "cross-env": "^7.0.3",

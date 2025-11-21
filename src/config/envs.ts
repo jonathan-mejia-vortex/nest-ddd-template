@@ -8,7 +8,10 @@ interface EnvVars {
   DB_PASSWORD: string;
   DB_DATABASE: string;
   JWT_SECRET: string;
+  JWT_EXPIRES_IN: string;
   PORT: number;
+  REDIS_HOST: string;
+  REDIS_PORT: number;
 }
 
 const envsSchema = joi
@@ -19,7 +22,10 @@ const envsSchema = joi
     DB_PASSWORD: joi.string().required(),
     DB_DATABASE: joi.string().required(),
     JWT_SECRET: joi.string().required(),
+    JWT_EXPIRES_IN: joi.string().default('24h'),
     PORT: joi.number().required(),
+    REDIS_HOST: joi.string().default('localhost'),
+    REDIS_PORT: joi.number().default(6379),
   })
   .unknown(true);
 
@@ -54,5 +60,8 @@ export const envs = {
   dbPassword: envVars.DB_PASSWORD,
   dbDatabase: envVars.DB_DATABASE,
   jwtSecret: envVars.JWT_SECRET,
+  jwtExpiresIn: envVars.JWT_EXPIRES_IN,
   port: envVars.PORT,
+  redisHost: envVars.REDIS_HOST,
+  redisPort: envVars.REDIS_PORT,
 };

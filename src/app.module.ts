@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { DbModule } from './db/db.module';
-import { AuthModule } from './resources/auth/auth.module';
-import { UserModule } from './resources/user/user.module';
+import { ApiModule } from './api/api.module';
+import { SharedModule } from './shared/shared.module';
+import { DomainExceptionFilter } from './shared/application/filters/domain-exception.filter';
 
 @Module({
-  imports: [DbModule, AuthModule, UserModule],
+  imports: [DbModule, ApiModule, SharedModule],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: DomainExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
