@@ -76,6 +76,12 @@ src/
 │   │       └── transaction.service.ts
 │   └── shared.module.ts
 │
+├── common/                           # Utilidades comunes cross-cutting
+│   ├── dto/
+│   │   ├── pagination.dto.ts
+│   │   └── response.interceptor.ts
+│   └── types.ts                     # Tipos y enums globales (ROLE, TransactionHost)
+│
 ├── api/                              # Capa de API (controllers y guards)
 │   ├── controllers/
 │   │   ├── users.controller.ts      # Controller delgado (solo delega)
@@ -107,6 +113,7 @@ El proyecto está organizado en capas con responsabilidades bien definidas:
 - **Aplicación**: Casos de uso que orquestan la lógica de dominio
 - **Infraestructura**: Implementaciones técnicas (DB, caché, APIs externas)
 - **API**: Punto de entrada HTTP (controllers delgados)
+- **Common**: Utilidades transversales (DTOs compartidos, tipos globales, interceptors)
 
 ### 2. **Patrón Hexagonal (Puertos y Adaptadores)**
 
@@ -398,6 +405,14 @@ export class AuthRepositoryImpl implements IAuthRepository {
 - ✅ **Redis Cache**: Sistema de caché configurado
 - ✅ **TransactionService**: Manejo centralizado de transacciones
 - ✅ **DomainExceptionFilter**: Mapeo de excepciones de dominio a HTTP
+- ✅ **ResponseInterceptor**: Formateo consistente de respuestas HTTP
+- ✅ **PaginationDTO**: DTO compartido para paginación
+
+### Cross-Cutting Concerns
+
+- ✅ **Types & Enums**: Tipos compartidos (ROLE, TransactionHost)
+- ✅ **Interceptors**: Response interceptor para formato unificado
+- ✅ **DTOs Comunes**: Pagination y otros DTOs reutilizables
 
 ### Seguridad
 

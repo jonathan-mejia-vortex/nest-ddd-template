@@ -35,6 +35,9 @@ src/
 │   ├── domain/            # Excepciones de dominio
 │   ├── application/       # Filters globales
 │   └── infrastructure/    # Redis, TransactionService
+├── common/                 # Utilidades comunes
+│   ├── dto/               # DTOs compartidos (pagination, interceptors)
+│   └── types.ts           # Tipos y enums globales
 ├── config/                 # Configuración
 ├── db/                     # Módulo de base de datos
 └── app.module.ts          # Módulo raíz
