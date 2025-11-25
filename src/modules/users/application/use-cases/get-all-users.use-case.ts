@@ -1,9 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from '../../domain/entities/user.entity';
 import {
   IUserRepository,
   USER_REPOSITORY,
+  PaginatedResult,
+  PaginationOptions,
 } from '../../domain/repositories/user.repository.interface';
+import { User } from '../../domain/entities/user.entity';
 
 @Injectable()
 export class GetAllUsersUseCase {
@@ -12,8 +14,8 @@ export class GetAllUsersUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(): Promise<User[]> {
-    return await this.userRepository.findAll();
+  async execute(options?: PaginationOptions): Promise<PaginatedResult<User>> {
+    return await this.userRepository.findAll(options);
   }
 }
 

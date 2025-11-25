@@ -1,3 +1,7 @@
+// IMPORTANTE: Importar tracing ANTES que cualquier otro código
+// para que la auto-instrumentación funcione correctamente
+import './tracing';
+
 import {
   Logger,
   RequestMethod,
@@ -11,11 +15,13 @@ import { ResponseInterceptor } from './common/dto/response.interceptor';
 import { envs } from './config/envs';
 
 async function bootstrap() {
-  const logger = new Logger('Monolith-App');
+  const logger = new Logger('MS-Auth');
   const app = await NestFactory.create(AppModule);
+  
   app.setGlobalPrefix('api', {
     exclude: [{ path: '', method: RequestMethod.GET }], // for health check
   });
+  
   app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.useGlobalPipes(
@@ -24,19 +30,28 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
+  
   app.enableVersioning({
     type: VersioningType.URI,
   });
+  
   const config = new DocumentBuilder()
-    .setTitle('Organizations API')
-    .setDescription('The Organizations API')
-    .setVersion('1.0')
-    .addTag('Organizations API')
+    .setTitle('MS-Auth API')
+    .setDescription('Microservicio de Autenticación y Autorización - DDD + Hexagonal')
+    .setVersion('1.0.0')
+    .addTag('Auth')
+    .addTag('Users')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
+  
   app.enableCors();
+  
   await app.listen(process.env.PORT ?? 3000);
-  logger.log(`Gateway microservice running on port: ${envs.port}`);
+  logger.log(`Auth microservice running on port: ${envs.port}`);
+  logger.log(`Environment: ${envs.nodeEnv}`);
+  logger.log(`Documentation available at http://localhost:${envs.port}/docs`);
 }
+
 bootstrap();

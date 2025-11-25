@@ -12,6 +12,12 @@ interface EnvVars {
   PORT: number;
   REDIS_HOST: string;
   REDIS_PORT: number;
+  ERP_API_URL: string;
+  WMS_API_URL: string;
+  AWS_REGION: string;
+  AWS_CLOUDWATCH_LOG_GROUP: string;
+  AWS_CLOUDWATCH_LOG_STREAM: string;
+  NODE_ENV: string;
 }
 
 const envsSchema = joi
@@ -26,6 +32,12 @@ const envsSchema = joi
     PORT: joi.number().required(),
     REDIS_HOST: joi.string().default('localhost'),
     REDIS_PORT: joi.number().default(6379),
+    ERP_API_URL: joi.string().default('http://localhost:3001/api'),
+    WMS_API_URL: joi.string().default('http://localhost:3002/api'),
+    AWS_REGION: joi.string().default('us-east-1'),
+    AWS_CLOUDWATCH_LOG_GROUP: joi.string().default('/aws/ms-auth'),
+    AWS_CLOUDWATCH_LOG_STREAM: joi.string().default('application'),
+    NODE_ENV: joi.string().default('development'),
   })
   .unknown(true);
 
@@ -64,4 +76,10 @@ export const envs = {
   port: envVars.PORT,
   redisHost: envVars.REDIS_HOST,
   redisPort: envVars.REDIS_PORT,
+  erpApiUrl: envVars.ERP_API_URL,
+  wmsApiUrl: envVars.WMS_API_URL,
+  awsRegion: envVars.AWS_REGION,
+  awsCloudWatchLogGroup: envVars.AWS_CLOUDWATCH_LOG_GROUP,
+  awsCloudWatchLogStream: envVars.AWS_CLOUDWATCH_LOG_STREAM,
+  nodeEnv: envVars.NODE_ENV,
 };

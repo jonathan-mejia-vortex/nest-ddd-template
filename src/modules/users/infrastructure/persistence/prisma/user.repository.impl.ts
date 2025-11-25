@@ -87,10 +87,25 @@ export class UserRepositoryImpl implements IUserRepository {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await this.prisma.user.findMany();
+  async findAll(options?: { limit: number; offset: number }): Promise<{
+    data: User[];
+    total: number;
+    hasMore: boolean;
+  }> {
+    const limit = options?.limit || 10;
+    const offset = options?.offset || 0;
 
-    return users.map((user) =>
+    // Obtener total count y datos en paralelo
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count(),
+    ]);
+
+    const data = users.map((user) =>
       User.fromPersistence({
         id: user.id,
         name: user.name,
@@ -100,6 +115,12 @@ export class UserRepositoryImpl implements IUserRepository {
         updatedAt: user.updatedAt,
       }),
     );
+
+    return {
+      data,
+      total,
+      hasMore: offset + limit < total,
+    };
   }
 }
 
