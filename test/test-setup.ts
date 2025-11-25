@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { buildTestConfigApp } from './helpers/test-config-app';
 import { createAuthAndGetToken } from './helpers/test-create-auth';
 import { PrismaService } from '../src/shared/infrastructure/persistence/prisma.service';
+import { UserRole } from '../src/common/types';
 
 export let app: INestApplication;
 export let prisma: PrismaService;
@@ -16,8 +17,8 @@ beforeAll(async () => {
   await prisma.cleanDatabase();
   
   // Crear usuarios de prueba
-  adminToken = await createAuthAndGetToken(prisma, app, 'ADMIN');
-  employeeToken = await createAuthAndGetToken(prisma, app, 'USER');
+  adminToken = await createAuthAndGetToken(prisma, app, UserRole.ADMIN);
+  employeeToken = await createAuthAndGetToken(prisma, app, UserRole.USER);
 
   await app.init();
 });

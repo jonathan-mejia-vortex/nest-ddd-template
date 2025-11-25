@@ -39,12 +39,16 @@ describe('Auth Entity', () => {
       expect(auth.password).toBe('new-password');
     });
 
-    it('should throw error when new password is empty', () => {
+    it('should throw error when new password is empty or too short', () => {
       const auth = Auth.create('test-id', 'test@example.com', 'old-password');
       
       expect(() => {
         auth.changePassword('');
-      }).toThrow('El password no puede estar vacío');
+      }).toThrow('La contraseña debe tener al menos 6 caracteres');
+
+      expect(() => {
+        auth.changePassword('12345');
+      }).toThrow('La contraseña debe tener al menos 6 caracteres');
     });
   });
 

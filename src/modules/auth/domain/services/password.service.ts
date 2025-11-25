@@ -16,7 +16,10 @@ export class PasswordService {
 
   validate(password: string): boolean {
     // Mínimo 6 caracteres
-    return password && password.length >= 6;
+    if (!password || password.length < 6) {
+      return false;
+    }
+    return true;
   }
 }
 
