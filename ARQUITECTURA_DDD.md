@@ -28,9 +28,8 @@ src/
 │   │   │       └── update-user.dto.ts
 │   │   ├── infrastructure/           # Capa de Infraestructura (detalles técnicos)
 │   │   │   └── persistence/
-│   │   │       └── sequelize/
-│   │   │           ├── user.sequelize.entity.ts  # Entidad Sequelize
-│   │   │           └── user.repository.impl.ts   # Adaptador (implementación)
+│   │   │       └── prisma/
+│   │   │           └── user.repository.impl.ts   # Adaptador Prisma (implementación)
 │   │   └── user.module.ts           # Módulo de NestJS
 │   │
 │   └── auth/
@@ -56,8 +55,7 @@ src/
 │       │       └── login.dto.ts
 │       ├── infrastructure/
 │       │   └── persistence/
-│       │       └── sequelize/
-│       │           ├── auth.sequelize.entity.ts
+│       │       └── prisma/
 │       │           └── auth.repository.impl.ts
 │       └── auth.module.ts
 │
@@ -73,7 +71,8 @@ src/
 │   │   ├── cache/
 │   │   │   └── redis.module.ts
 │   │   └── persistence/
-│   │       └── transaction.service.ts
+│   │       ├── prisma.service.ts          # Singleton de Prisma
+│   │       └── transaction.service.ts     # Manejo de transacciones
 │   └── shared.module.ts
 │
 ├── common/                           # Utilidades comunes cross-cutting
@@ -109,10 +108,10 @@ src/
 
 El proyecto está organizado en capas con responsabilidades bien definidas:
 
-- **Dominio**: Lógica de negocio pura, sin dependencias de frameworks
+- **Dominio**: Lógica de negocio pura, sin dependencias de frameworks ni Prisma
 - **Aplicación**: Casos de uso que orquestan la lógica de dominio
-- **Infraestructura**: Implementaciones técnicas (DB, caché, APIs externas)
-- **API**: Punto de entrada HTTP (controllers delgados)
+- **Infraestructura**: Implementaciones técnicas (Prisma, Redis, APIs externas)
+- **API**: Punto de entrada HTTP (controllers delgados, guards custom)
 - **Common**: Utilidades transversales (DTOs compartidos, tipos globales, interceptors)
 
 ### 2. **Patrón Hexagonal (Puertos y Adaptadores)**
@@ -399,11 +398,13 @@ export class AuthRepositoryImpl implements IAuthRepository {
 
 ### Infraestructura
 
-- ✅ **Pool de Conexiones Optimizado**: max 20, min 5 conexiones
-- ✅ **Migraciones Versionadas**: Control de cambios de base de datos
+- ✅ **Prisma Client**: Type-safe database access
+- ✅ **PrismaService**: Singleton con lifecycle hooks
+- ✅ **Connection Pooling**: Automático con Prisma
+- ✅ **Migraciones con Prisma**: Control de cambios de base de datos
 - ✅ **Índices Críticos**: Optimización de queries (authId, email, role)
 - ✅ **Redis Cache**: Sistema de caché configurado
-- ✅ **TransactionService**: Manejo centralizado de transacciones
+- ✅ **TransactionService**: Manejo centralizado con prisma.$transaction()
 - ✅ **DomainExceptionFilter**: Mapeo de excepciones de dominio a HTTP
 - ✅ **ResponseInterceptor**: Formateo consistente de respuestas HTTP
 - ✅ **PaginationDTO**: DTO compartido para paginación

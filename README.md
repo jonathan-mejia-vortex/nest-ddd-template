@@ -247,7 +247,6 @@ En pgAdmin:
 ## 📚 Documentación Adicional
 
 - [ARQUITECTURA_DDD.md](./ARQUITECTURA_DDD.md) - Guía completa de arquitectura
-- [MIGRACION_PRISMA.md](./MIGRACION_PRISMA.md) - Migración de Sequelize a Prisma
 
 ## 🔄 Migraciones con Prisma
 
