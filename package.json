@@ -52,6 +52,7 @@
   "devDependencies": {
     "@aws-sdk/client-cloudwatch": "^3.939.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.939.0",
+    "@jest/test-sequencer": "^30.2.0",
     "@nestjs/cli": "^11.0.6",
     "@nestjs/schematics": "^11.0.4",
     "@nestjs/testing": "^11.0.14",

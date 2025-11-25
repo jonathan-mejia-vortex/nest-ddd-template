@@ -4,6 +4,7 @@ import {
   HttpCode,
   Post,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBadRequestResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CreateAuthUseCase } from '../../modules/auth/application/use-cases/create-auth.use-case';
 import { ValidateUserUseCase } from '../../modules/auth/application/use-cases/validate-user.use-case';
 import { LoginUseCase } from '../../modules/auth/application/use-cases/login.use-case';
@@ -15,6 +16,7 @@ import { TransactionService } from '../../shared/infrastructure/persistence/tran
  * AuthController - Controlador delgado sin Passport
  * Login y signup manuales con casos de uso
  */
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -25,6 +27,19 @@ export class AuthController {
   ) {}
 
   @Post('/signup')
+  @ApiOperation({ 
+    summary: 'Registrar nuevo usuario',
+    description: 'Crea un nuevo usuario con credenciales de autenticación'
+  })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Usuario registrado correctamente',
+    schema: {
+      example: { message: 'Usuario registrado correctamente' }
+    }
+  })
+  @ApiBadRequestResponse({ description: 'Datos inválidos' })
+  @ApiResponse({ status: 409, description: 'Email ya existe' })
   async create(@Body() createAuthDto: CreateAuthDto) {
     return await this.transactionService.runInTransaction(async (tx) => {
       await this.createAuthUseCase.execute(
@@ -45,6 +60,25 @@ export class AuthController {
    */
   @HttpCode(200)
   @Post('/login')
+  @ApiOperation({ 
+    summary: 'Iniciar sesión',
+    description: 'Autenticación con email y contraseña. Retorna token JWT.'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Login exitoso',
+    schema: {
+      example: { 
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        user: {
+          id: 'uuid',
+          name: 'John Doe',
+          role: 'USER'
+        }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ description: 'Credenciales inválidas' })
   async login(@Body() loginDto: LoginDto) {
     // Validar credenciales
     const user = await this.validateUserUseCase.execute({
