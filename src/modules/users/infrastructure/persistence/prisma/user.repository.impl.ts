@@ -1,29 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { Prisma } from '@prisma/client';
 import { User } from '../../../domain/entities/user.entity';
 import { UserCreationFailedException } from '../../../domain/exceptions/user-creation-failed.exception';
-import { UserNotFoundException } from '../../../domain/exceptions/user-not-found.exception';
 import { IUserRepository } from '../../../domain/repositories/user.repository.interface';
-import { UserSequelizeEntity } from './user.sequelize.entity';
+import { PrismaService } from '../../../../../shared/infrastructure/persistence/prisma.service';
 
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
-  constructor(
-    @InjectModel(UserSequelizeEntity)
-    private readonly userModel: typeof UserSequelizeEntity,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(user: User, transaction?: any): Promise<User> {
     try {
-      const created = await this.userModel.create(
-        {
+      const prismaClient = transaction || this.prisma;
+
+      const created = await prismaClient.user.create({
+        data: {
           id: user.id,
           name: user.name,
           authId: user.authId,
           role: user.role,
         },
-        transaction ? { transaction } : undefined,
-      );
+      });
 
       return User.fromPersistence({
         id: created.id,
@@ -40,20 +37,23 @@ export class UserRepositoryImpl implements IUserRepository {
 
   async update(user: User): Promise<void> {
     try {
-      await this.userModel.update(
-        {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
           name: user.name,
           role: user.role,
         },
-        { where: { id: user.id } },
-      );
+      });
     } catch (error) {
       throw new Error(`Error al actualizar usuario: ${error.message}`);
     }
   }
 
   async findById(id: string): Promise<User | null> {
-    const found = await this.userModel.findByPk(id);
+    const found = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
     if (!found) {
       return null;
     }
@@ -69,7 +69,10 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   async findByAuthId(authId: string): Promise<User | null> {
-    const found = await this.userModel.findOne({ where: { authId } });
+    const found = await this.prisma.user.findUnique({
+      where: { authId },
+    });
+
     if (!found) {
       return null;
     }
@@ -85,7 +88,7 @@ export class UserRepositoryImpl implements IUserRepository {
   }
 
   async findAll(): Promise<User[]> {
-    const users = await this.userModel.findAll();
+    const users = await this.prisma.user.findMany();
 
     return users.map((user) =>
       User.fromPersistence({

@@ -1,28 +1,32 @@
 import { INestApplication } from '@nestjs/common';
-import { Sequelize } from 'sequelize-typescript';
 import { buildTestConfigApp } from './helpers/test-config-app';
 import { createAuthAndGetToken } from './helpers/test-create-auth';
+import { PrismaService } from '../src/shared/infrastructure/persistence/prisma.service';
 
 export let app: INestApplication;
-export let sequelize: Sequelize;
+export let prisma: PrismaService;
 export let adminToken: string;
 export let employeeToken: string;
 
 beforeAll(async () => {
   app = await buildTestConfigApp();
-  sequelize = app.get<Sequelize>(Sequelize);
-  adminToken = await createAuthAndGetToken(sequelize, app, 'ADMIN');
-  employeeToken = await createAuthAndGetToken(sequelize, app, 'EMPLOYEE');
-  // const data = await createFirstData(sequelize, app);
+  prisma = app.get<PrismaService>(PrismaService);
+  
+  // Limpiar base de datos antes de los tests
+  await prisma.cleanDatabase();
+  
+  // Crear usuarios de prueba
+  adminToken = await createAuthAndGetToken(prisma, app, 'ADMIN');
+  employeeToken = await createAuthAndGetToken(prisma, app, 'USER');
 
   await app.init();
 });
 
 /**
- * The DB will be cleaned when all tests are finished, so the products, the users, everything will remains in the db until the end.
+ * La DB se limpia cuando todos los tests terminan
  */
 afterAll(async () => {
-  await sequelize.sync({ force: true });
+  await prisma.cleanDatabase();
   if (app) await app.close();
-  if (sequelize) await sequelize.close();
+  if (prisma) await prisma.$disconnect();
 });

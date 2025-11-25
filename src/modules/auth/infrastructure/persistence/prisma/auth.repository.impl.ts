@@ -1,29 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { Auth } from '../../../domain/entities/auth.entity';
-import { AuthNotFoundException } from '../../../domain/exceptions/auth-not-found.exception';
 import { EmailAlreadyExistsException } from '../../../domain/exceptions/email-already-exists.exception';
 import { IAuthRepository } from '../../../domain/repositories/auth.repository.interface';
-import { UserSequelizeEntity } from '../../../../users/infrastructure/persistence/sequelize/user.sequelize.entity';
-import { AuthSequelizeEntity } from './auth.sequelize.entity';
+import { PrismaService } from '../../../../../shared/infrastructure/persistence/prisma.service';
 
 @Injectable()
 export class AuthRepositoryImpl implements IAuthRepository {
-  constructor(
-    @InjectModel(AuthSequelizeEntity)
-    private readonly authModel: typeof AuthSequelizeEntity,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(auth: Auth, transaction?: any): Promise<Auth> {
     try {
-      const created = await this.authModel.create(
-        {
+      const prismaClient = transaction || this.prisma;
+
+      const created = await prismaClient.auth.create({
+        data: {
           id: auth.id,
           email: auth.email,
           password: auth.password,
         },
-        transaction ? { transaction } : undefined,
-      );
+      });
 
       return Auth.fromPersistence({
         id: created.id,
@@ -33,7 +29,8 @@ export class AuthRepositoryImpl implements IAuthRepository {
         updatedAt: created.updatedAt,
       });
     } catch (error) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
+      // Prisma unique constraint error
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new EmailAlreadyExistsException(auth.email);
       }
       throw new Error(`Error al crear auth: ${error.message}`);
@@ -41,8 +38,9 @@ export class AuthRepositoryImpl implements IAuthRepository {
   }
 
   async findById(id: string): Promise<Auth | null> {
-    const found = await this.authModel.findByPk(id, {
-      include: [{ model: UserSequelizeEntity, as: 'user' }],
+    const found = await this.prisma.auth.findUnique({
+      where: { id },
+      include: { user: true },
     });
 
     if (!found) {
@@ -59,9 +57,9 @@ export class AuthRepositoryImpl implements IAuthRepository {
   }
 
   async findByEmail(email: string): Promise<Auth | null> {
-    const found = await this.authModel.findOne({
+    const found = await this.prisma.auth.findUnique({
       where: { email },
-      include: [{ model: UserSequelizeEntity, as: 'user' }],
+      include: { user: true },
     });
 
     if (!found) {
@@ -78,7 +76,7 @@ export class AuthRepositoryImpl implements IAuthRepository {
   }
 
   async findAll(): Promise<Auth[]> {
-    const auths = await this.authModel.findAll();
+    const auths = await this.prisma.auth.findMany();
 
     return auths.map((auth) =>
       Auth.fromPersistence({
