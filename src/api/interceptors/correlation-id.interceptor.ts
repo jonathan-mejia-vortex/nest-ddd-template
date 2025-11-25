@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 /**
  * Interceptor global para generar y propagar Correlation ID
  * El Correlation ID permite rastrear una request a través de múltiples servicios
- * 
+ *
  * - Lee el header 'X-Correlation-ID' si existe
  * - Si no existe, genera uno nuevo con UUID v4
  * - Lo agrega al request object para uso en logging
@@ -24,8 +24,7 @@ export class CorrelationIdInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse();
 
     // Obtener o generar correlation ID
-    const correlationId =
-      request.headers['x-correlation-id'] || uuidv4();
+    const correlationId = request.headers['x-correlation-id'] || uuidv4();
 
     // Agregar al request para uso posterior (logging, etc)
     request.correlationId = correlationId;
@@ -40,4 +39,3 @@ export class CorrelationIdInterceptor implements NestInterceptor {
     );
   }
 }
-

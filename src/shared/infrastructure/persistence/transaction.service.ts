@@ -12,7 +12,7 @@ export class TransactionService {
   /**
    * Ejecuta una operación dentro de una transacción
    * Si alguna operación falla, se hace rollback automáticamente
-   * 
+   *
    * @example
    * await transactionService.runInTransaction(async (tx) => {
    *   const auth = await authRepository.create(authEntity, tx);
@@ -20,9 +20,7 @@ export class TransactionService {
    *   return { auth, user };
    * });
    */
-  async runInTransaction<T>(
-    fn: (tx: any) => Promise<T>,
-  ): Promise<T> {
+  async runInTransaction<T>(fn: (tx: any) => Promise<T>): Promise<T> {
     return this.prisma.$transaction(async (tx) => {
       return fn(tx);
     });

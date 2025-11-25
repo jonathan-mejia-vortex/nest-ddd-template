@@ -8,4 +8,3 @@ export class UserNotFoundException extends DomainException {
     );
   }
 }
-

@@ -1,12 +1,12 @@
 /**
  * Configuración de OpenTelemetry para AWS X-Ray
- * 
+ *
  * Este archivo debe ser importado ANTES que cualquier otro código de la aplicación
  * para asegurar que la instrumentación automática funcione correctamente.
- * 
+ *
  * En main.ts, agregar al inicio:
  * import './tracing';
- * 
+ *
  * Configuración:
  * - Auto-instrumentación para NestJS, HTTP, Prisma, Redis, etc
  * - Exportación de trazas a AWS X-Ray

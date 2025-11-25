@@ -12,10 +12,10 @@ export let employeeToken: string;
 beforeAll(async () => {
   app = await buildTestConfigApp();
   prisma = app.get<PrismaService>(PrismaService);
-  
+
   // Limpiar base de datos antes de los tests
   await prisma.cleanDatabase();
-  
+
   // Crear usuarios de prueba
   adminToken = await createAuthAndGetToken(prisma, app, UserRole.ADMIN);
   employeeToken = await createAuthAndGetToken(prisma, app, UserRole.USER);

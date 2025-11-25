@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Auth } from '../../../domain/entities/auth.entity';
 import { EmailAlreadyExistsException } from '../../../domain/exceptions/email-already-exists.exception';
 import { IAuthRepository } from '../../../domain/repositories/auth.repository.interface';
@@ -30,7 +30,10 @@ export class AuthRepositoryImpl implements IAuthRepository {
       });
     } catch (error) {
       // Prisma unique constraint error
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
         throw new EmailAlreadyExistsException(auth.email);
       }
       throw new Error(`Error al crear auth: ${error.message}`);
@@ -89,4 +92,3 @@ export class AuthRepositoryImpl implements IAuthRepository {
     );
   }
 }
-

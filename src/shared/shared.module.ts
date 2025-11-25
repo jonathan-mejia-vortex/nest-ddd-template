@@ -15,7 +15,7 @@ import { CloudWatchMetricsService } from './infrastructure/metrics/cloudwatch-me
 
 /**
  * SharedModule - Módulo global con servicios compartidos de infraestructura
- * 
+ *
  * Incluye:
  * - Persistencia: PrismaService, TransactionService
  * - Mensajería: SQS Mock

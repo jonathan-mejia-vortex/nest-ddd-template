@@ -55,4 +55,3 @@ export class ValidateUserUseCase {
     return user;
   }
 }
-

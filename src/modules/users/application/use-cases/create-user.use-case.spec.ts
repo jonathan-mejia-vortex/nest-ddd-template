@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserUseCase } from './create-user.use-case';
-import { IUserRepository, USER_REPOSITORY } from '../../domain/repositories/user.repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/repositories/user.repository.interface';
 import { User } from '../../domain/entities/user.entity';
 import { UserRole } from '../../../../common/types';
 
@@ -107,4 +110,3 @@ describe('CreateUserUseCase', () => {
     });
   });
 });
-

@@ -35,15 +35,15 @@ describe('User Entity', () => {
   describe('changeName', () => {
     it('should change user name successfully', () => {
       const user = User.create('test-id', 'John Doe', 'auth-id', UserRole.USER);
-      
+
       user.changeName('Jane Doe');
-      
+
       expect(user.name).toBe('Jane Doe');
     });
 
     it('should throw error when new name is empty', () => {
       const user = User.create('test-id', 'John Doe', 'auth-id', UserRole.USER);
-      
+
       expect(() => {
         user.changeName('');
       }).toThrow('El nombre no puede estar vacío');
@@ -51,7 +51,7 @@ describe('User Entity', () => {
 
     it('should throw error when new name is only whitespace', () => {
       const user = User.create('test-id', 'John Doe', 'auth-id', UserRole.USER);
-      
+
       expect(() => {
         user.changeName('   ');
       }).toThrow('El nombre no puede estar vacío');
@@ -61,23 +61,28 @@ describe('User Entity', () => {
   describe('changeRole', () => {
     it('should change user role successfully', () => {
       const user = User.create('test-id', 'John Doe', 'auth-id', UserRole.USER);
-      
+
       user.changeRole(UserRole.ADMIN);
-      
+
       expect(user.role).toBe(UserRole.ADMIN);
     });
   });
 
   describe('isAdmin', () => {
     it('should return true for admin users', () => {
-      const user = User.create('test-id', 'John Doe', 'auth-id', UserRole.ADMIN);
-      
+      const user = User.create(
+        'test-id',
+        'John Doe',
+        'auth-id',
+        UserRole.ADMIN,
+      );
+
       expect(user.isAdmin()).toBe(true);
     });
 
     it('should return false for non-admin users', () => {
       const user = User.create('test-id', 'John Doe', 'auth-id', UserRole.USER);
-      
+
       expect(user.isAdmin()).toBe(false);
     });
   });
@@ -99,4 +104,3 @@ describe('User Entity', () => {
     });
   });
 });
-

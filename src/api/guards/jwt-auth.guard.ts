@@ -33,7 +33,7 @@ export class JwtAuthGuard implements CanActivate {
 
       // Opcional: Verificar que el auth existe en la base de datos
       const auth = await this.getAuthByIdUseCase.execute(payload.authId);
-      
+
       if (!auth) {
         throw new UnauthorizedException('Usuario no encontrado');
       }

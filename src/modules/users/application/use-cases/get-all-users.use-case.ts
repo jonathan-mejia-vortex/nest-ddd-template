@@ -18,4 +18,3 @@ export class GetAllUsersUseCase {
     return await this.userRepository.findAll(options);
   }
 }
-

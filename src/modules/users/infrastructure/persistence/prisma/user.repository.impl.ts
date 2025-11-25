@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { User } from '../../../domain/entities/user.entity';
 import { UserCreationFailedException } from '../../../domain/exceptions/user-creation-failed.exception';
 import { IUserRepository } from '../../../domain/repositories/user.repository.interface';
@@ -123,4 +122,3 @@ export class UserRepositoryImpl implements IUserRepository {
     };
   }
 }
-

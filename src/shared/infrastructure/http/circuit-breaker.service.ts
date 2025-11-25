@@ -13,7 +13,7 @@ export interface CircuitBreakerOptions {
 /**
  * Servicio para crear y gestionar Circuit Breakers
  * Utiliza la librería opossum para implementar el patrón Circuit Breaker
- * 
+ *
  * Estados:
  * - CLOSED: Funcionamiento normal, requests pasan
  * - OPEN: Circuito abierto por muchos errores, requests fallan inmediatamente
@@ -69,9 +69,7 @@ export class CircuitBreakerService {
     });
 
     breaker.on('failure', (error) => {
-      this.logger.error(
-        `Circuit Breaker FAILURE: ${name} - ${error.message}`,
-      );
+      this.logger.error(`Circuit Breaker FAILURE: ${name} - ${error.message}`);
     });
 
     this.breakers.set(name, breaker);
@@ -125,4 +123,3 @@ export class CircuitBreakerService {
     }
   }
 }
-

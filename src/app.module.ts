@@ -11,7 +11,7 @@ import { DomainExceptionFilter } from './shared/application/filters/domain-excep
 @Module({
   imports: [
     SharedModule, // Incluye PrismaService y TransactionService
-    ApiModule,    // Controllers y guards
+    ApiModule, // Controllers y guards
   ],
   controllers: [],
   providers: [

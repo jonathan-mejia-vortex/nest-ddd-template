@@ -1,10 +1,11 @@
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import {
-  Body,
-  Controller,
-  HttpCode,
-  Post,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBadRequestResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CreateAuthUseCase } from '../../modules/auth/application/use-cases/create-auth.use-case';
 import { ValidateUserUseCase } from '../../modules/auth/application/use-cases/validate-user.use-case';
 import { LoginUseCase } from '../../modules/auth/application/use-cases/login.use-case';
@@ -27,16 +28,16 @@ export class AuthController {
   ) {}
 
   @Post('/signup')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Registrar nuevo usuario',
-    description: 'Crea un nuevo usuario con credenciales de autenticación'
+    description: 'Crea un nuevo usuario con credenciales de autenticación',
   })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Usuario registrado correctamente',
     schema: {
-      example: { message: 'Usuario registrado correctamente' }
-    }
+      example: { message: 'Usuario registrado correctamente' },
+    },
   })
   @ApiBadRequestResponse({ description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email ya existe' })
@@ -60,23 +61,23 @@ export class AuthController {
    */
   @HttpCode(200)
   @Post('/login')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Iniciar sesión',
-    description: 'Autenticación con email y contraseña. Retorna token JWT.'
+    description: 'Autenticación con email y contraseña. Retorna token JWT.',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Login exitoso',
     schema: {
-      example: { 
+      example: {
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         user: {
           id: 'uuid',
           name: 'John Doe',
-          role: 'USER'
-        }
-      }
-    }
+          role: 'USER',
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({ description: 'Credenciales inválidas' })
   async login(@Body() loginDto: LoginDto) {

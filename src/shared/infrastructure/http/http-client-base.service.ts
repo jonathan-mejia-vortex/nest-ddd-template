@@ -69,12 +69,7 @@ export abstract class HttpClientBase {
 
         // Aquí iría la llamada HTTP real usando axios, node-fetch, etc
         // Por ahora es un mock para demostración
-        const response = await this.performHttpCall(
-          method,
-          url,
-          data,
-          options,
-        );
+        const response = await this.performHttpCall(method, url, data, options);
 
         this.logger.log({
           message: `HTTP ${method} success`,
@@ -177,4 +172,3 @@ export abstract class HttpClientBase {
     return this.circuitBreaker.stats;
   }
 }
-

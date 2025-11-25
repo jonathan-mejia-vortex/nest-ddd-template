@@ -46,13 +46,13 @@ export class Auth {
     if (!id || !email || !hashedPassword) {
       throw new Error('Los campos id, email y password son requeridos');
     }
-    
+
     const auth = new Auth(id, email, hashedPassword, new Date(), new Date());
-    
+
     if (!auth.validateEmail()) {
       throw new Error('Formato de email inválido');
     }
-    
+
     return auth;
   }
 
@@ -73,4 +73,3 @@ export class Auth {
     );
   }
 }
-

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { User, UserRole } from '../../domain/entities/user.entity';
+import { UserRole } from '../../domain/entities/user.entity';
 import { UserNotFoundException } from '../../domain/exceptions/user-not-found.exception';
 import {
   IUserRepository,
@@ -37,4 +37,3 @@ export class UpdateUserUseCase {
     await this.userRepository.update(user);
   }
 }
-

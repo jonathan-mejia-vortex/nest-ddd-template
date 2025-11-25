@@ -14,7 +14,7 @@ import { MetricsInterceptor } from './interceptors/metrics.interceptor';
 
 /**
  * ApiModule - Módulo de la capa de API
- * 
+ *
  * Incluye:
  * - Controllers delgados (auth, users)
  * - Guards custom (JWT, Roles, Idempotency)

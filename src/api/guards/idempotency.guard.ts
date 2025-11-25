@@ -19,7 +19,7 @@ export const Idempotent = (operation: string) =>
 /**
  * Guard para garantizar idempotencia en endpoints críticos
  * Requiere que el cliente envíe un header 'X-Idempotency-Key'
- * 
+ *
  * Uso:
  * @Post()
  * @Idempotent('create-user')
@@ -84,4 +84,3 @@ export class IdempotencyGuard implements CanActivate {
     return true;
   }
 }
-

@@ -19,10 +19,7 @@ export class CreateUserUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(
-    command: CreateUserCommand,
-    transaction?: any,
-  ): Promise<User> {
+  async execute(command: CreateUserCommand, transaction?: any): Promise<User> {
     const user = User.create(
       uuidv4(),
       command.name,
@@ -33,4 +30,3 @@ export class CreateUserUseCase {
     return await this.userRepository.create(user, transaction);
   }
 }
-

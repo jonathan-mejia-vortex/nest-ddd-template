@@ -23,4 +23,3 @@ export class GetAuthByIdUseCase {
     return auth;
   }
 }
-

@@ -18,14 +18,14 @@ export interface MetricData {
 /**
  * Servicio para enviar métricas a AWS CloudWatch Metrics
  * Las métricas se acumulan en un buffer y se envían por batch para optimizar costos
- * 
+ *
  * Métricas implementadas:
  * - request_duration: Duración de requests HTTP
  * - request_count: Contador de requests por endpoint
  * - error_count: Contador de errores por endpoint
  * - database_query_duration: Duración de queries a DB
  * - cache_hit_rate: Tasa de aciertos de caché
- * 
+ *
  * Dimensiones comunes:
  * - Endpoint: Ruta del endpoint
  * - Method: Método HTTP
@@ -210,7 +210,11 @@ export class CloudWatchMetricsService implements OnModuleInit {
   /**
    * Incrementa contador de errores
    */
-  async recordError(endpoint: string, method: string, errorType: string): Promise<void> {
+  async recordError(
+    endpoint: string,
+    method: string,
+    errorType: string,
+  ): Promise<void> {
     await this.putMetric({
       metricName: 'ErrorCount',
       value: 1,
@@ -267,4 +271,3 @@ export class CloudWatchMetricsService implements OnModuleInit {
     await this.flush();
   }
 }
-

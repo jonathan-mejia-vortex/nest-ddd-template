@@ -18,12 +18,12 @@ export interface LogEvent {
 /**
  * Servicio para enviar logs a AWS CloudWatch Logs
  * Los logs se acumulan en un buffer y se envían por batch para optimizar costos
- * 
+ *
  * Configuración:
  * - AWS_REGION: Región de AWS
  * - AWS_CLOUDWATCH_LOG_GROUP: Nombre del grupo de logs
  * - AWS_CLOUDWATCH_LOG_STREAM: Nombre del stream de logs
- * 
+ *
  * Nota: En desarrollo/testing, los logs solo se envían si las credenciales AWS están configuradas
  */
 @Injectable()
@@ -163,4 +163,3 @@ export class CloudWatchLoggerService implements OnModuleInit {
     await this.flush();
   }
 }
-

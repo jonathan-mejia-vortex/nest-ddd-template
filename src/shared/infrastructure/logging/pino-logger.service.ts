@@ -5,7 +5,7 @@ import { envs } from '../../../config/envs';
 /**
  * Servicio de logging estructurado con Pino
  * Proporciona logging con contexto automático y formato JSON
- * 
+ *
  * Contexto automático incluye:
  * - correlation_id: ID de correlación de la request
  * - user_id: ID del usuario autenticado
@@ -158,4 +158,3 @@ export class PinoLoggerService implements LoggerService {
     return childLogger;
   }
 }
-

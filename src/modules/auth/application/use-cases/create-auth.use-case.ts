@@ -6,7 +6,10 @@ import {
   IAuthRepository,
 } from '../../domain/repositories/auth.repository.interface';
 import { PasswordService } from '../../domain/services/password.service';
-import { CreateUserCommand, CreateUserUseCase } from '../../../users/application/use-cases/create-user.use-case';
+import {
+  CreateUserCommand,
+  CreateUserUseCase,
+} from '../../../users/application/use-cases/create-user.use-case';
 import { UserRole } from '../../../users/domain/entities/user.entity';
 
 export interface CreateAuthCommand {
@@ -25,10 +28,7 @@ export class CreateAuthUseCase {
     private readonly createUserUseCase: CreateUserUseCase,
   ) {}
 
-  async execute(
-    command: CreateAuthCommand,
-    transaction?: any,
-  ): Promise<Auth> {
+  async execute(command: CreateAuthCommand, transaction?: any): Promise<Auth> {
     // Validar password
     if (!this.passwordService.validate(command.password)) {
       throw new Error('La contraseña debe tener al menos 6 caracteres');
@@ -54,4 +54,3 @@ export class CreateAuthUseCase {
     return createdAuth;
   }
 }
-

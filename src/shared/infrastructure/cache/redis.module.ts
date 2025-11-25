@@ -21,4 +21,3 @@ import { envs } from '../../../config/envs';
   exports: [CacheModule],
 })
 export class RedisModule {}
-

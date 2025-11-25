@@ -10,4 +10,3 @@ export class AuthNotFoundException extends DomainException {
     );
   }
 }
-

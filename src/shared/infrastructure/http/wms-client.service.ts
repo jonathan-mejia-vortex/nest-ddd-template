@@ -6,7 +6,7 @@ import { envs } from '../../../config/envs';
 /**
  * Cliente HTTP para comunicación con el sistema WMS (Warehouse Management System)
  * Implementa circuit breaker, retry logic y manejo de errores
- * 
+ *
  * Ejemplo de uso futuro:
  * - Consultar disponibilidad de stock
  * - Crear órdenes de pickup
@@ -75,11 +75,7 @@ export class WmsClientService extends HttpClientBase {
   /**
    * Ejemplo: Actualizar estado de envío
    */
-  async updateShipmentStatus(
-    shipmentId: string,
-    status: string,
-  ): Promise<any> {
+  async updateShipmentStatus(shipmentId: string, status: string): Promise<any> {
     return this.put(`/shipments/${shipmentId}/status`, { status });
   }
 }
-

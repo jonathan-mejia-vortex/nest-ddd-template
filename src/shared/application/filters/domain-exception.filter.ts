@@ -43,4 +43,3 @@ export class DomainExceptionFilter implements ExceptionFilter {
     return errorMapping[exception.code] || HttpStatus.BAD_REQUEST;
   }
 }
-

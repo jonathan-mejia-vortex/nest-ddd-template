@@ -11,7 +11,7 @@ import { CloudWatchLoggerService } from '../../shared/infrastructure/logging/clo
 
 /**
  * Interceptor global para logging de requests/responses
- * 
+ *
  * Funcionalidades:
  * - Log de request entrante (method, url, params, query)
  * - Log de response (status, duration)
@@ -109,4 +109,3 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 }
-

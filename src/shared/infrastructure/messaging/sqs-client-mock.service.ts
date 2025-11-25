@@ -76,4 +76,3 @@ export class SqsClientMockService implements ISqsClient {
     }
   }
 }
-

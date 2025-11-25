@@ -1,7 +1,4 @@
-import { INestApplication } from '@nestjs/common';
-import { Sequelize } from 'sequelize-typescript';
-
-export async function createFirstData(
-  sequelize: Sequelize,
-  app: INestApplication,
-) {}
+// Archivo legacy - mantener para compatibilidad con tests antiguos
+export async function createFirstData() {
+  // Sin implementación - mantener para evitar errores de importación
+}

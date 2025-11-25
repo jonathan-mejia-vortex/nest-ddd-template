@@ -5,4 +5,3 @@ export class InvalidCredentialsException extends DomainException {
     super('INVALID_CREDENTIALS', 'Credenciales inválidas');
   }
 }
-

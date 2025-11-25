@@ -6,7 +6,7 @@ import { envs } from '../../../config/envs';
 /**
  * Cliente HTTP para comunicación con el sistema ERP
  * Implementa circuit breaker, retry logic y manejo de errores
- * 
+ *
  * Ejemplo de uso futuro:
  * - Crear/actualizar usuarios en ERP
  * - Sincronizar datos de clientes
@@ -72,4 +72,3 @@ export class ErpClientService extends HttpClientBase {
     return this.get(`/customers/${customerId}`);
   }
 }
-

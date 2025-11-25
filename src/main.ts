@@ -17,11 +17,11 @@ import { envs } from './config/envs';
 async function bootstrap() {
   const logger = new Logger('MS-Auth');
   const app = await NestFactory.create(AppModule);
-  
+
   app.setGlobalPrefix('api', {
     exclude: [{ path: '', method: RequestMethod.GET }], // for health check
   });
-  
+
   app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.useGlobalPipes(
@@ -30,14 +30,16 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
-  
+
   app.enableVersioning({
     type: VersioningType.URI,
   });
-  
+
   const config = new DocumentBuilder()
     .setTitle('MS-Auth API')
-    .setDescription('Microservicio de Autenticación y Autorización - DDD + Hexagonal')
+    .setDescription(
+      'Microservicio de Autenticación y Autorización - DDD + Hexagonal',
+    )
     .setVersion('1.0.0')
     .addTag('Auth')
     .addTag('Users')
@@ -45,9 +47,9 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  
+
   app.enableCors();
-  
+
   await app.listen(process.env.PORT ?? 3000);
   logger.log(`Auth microservice running on port: ${envs.port}`);
   logger.log(`Environment: ${envs.nodeEnv}`);

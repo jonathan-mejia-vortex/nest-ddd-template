@@ -10,27 +10,25 @@ import { CloudWatchMetricsService } from '../../shared/infrastructure/metrics/cl
 
 /**
  * Interceptor global para métricas de performance
- * 
+ *
  * Métricas registradas:
  * - Duración de cada request
  * - Contador de requests por endpoint/método/status
  * - Contador de errores por endpoint/método/tipo
- * 
+ *
  * Las métricas se envían a CloudWatch Metrics en batch
  */
 @Injectable()
 export class MetricsInterceptor implements NestInterceptor {
-  constructor(
-    private readonly metricsService: CloudWatchMetricsService,
-  ) {}
+  constructor(private readonly metricsService: CloudWatchMetricsService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const { method, url } = request;
-    
+
     // Normalizar URL para métricas (remover IDs dinámicos)
     const normalizedUrl = this.normalizeUrl(url);
-    
+
     const startTime = Date.now();
 
     return next.handle().pipe(
@@ -72,11 +70,7 @@ export class MetricsInterceptor implements NestInterceptor {
           statusCode,
         );
 
-        this.metricsService.recordError(
-          normalizedUrl,
-          method,
-          errorType,
-        );
+        this.metricsService.recordError(normalizedUrl, method, errorType);
 
         return throwError(() => error);
       }),
@@ -89,8 +83,10 @@ export class MetricsInterceptor implements NestInterceptor {
    */
   private normalizeUrl(url: string): string {
     return url
-      .replace(/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '/:id') // UUIDs
+      .replace(
+        /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
+        '/:id',
+      ) // UUIDs
       .replace(/\/\d+/g, '/:id'); // Números
   }
 }
-

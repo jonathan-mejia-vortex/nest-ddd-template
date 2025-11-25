@@ -3,7 +3,11 @@ import { Auth } from './auth.entity';
 describe('Auth Entity', () => {
   describe('create', () => {
     it('should create an auth with valid data', () => {
-      const auth = Auth.create('test-id', 'test@example.com', 'hashed-password');
+      const auth = Auth.create(
+        'test-id',
+        'test@example.com',
+        'hashed-password',
+      );
 
       expect(auth).toBeInstanceOf(Auth);
       expect(auth.id).toBe('test-id');
@@ -33,15 +37,15 @@ describe('Auth Entity', () => {
   describe('changePassword', () => {
     it('should change password successfully', () => {
       const auth = Auth.create('test-id', 'test@example.com', 'old-password');
-      
+
       auth.changePassword('new-password');
-      
+
       expect(auth.password).toBe('new-password');
     });
 
     it('should throw error when new password is empty or too short', () => {
       const auth = Auth.create('test-id', 'test@example.com', 'old-password');
-      
+
       expect(() => {
         auth.changePassword('');
       }).toThrow('La contraseña debe tener al menos 6 caracteres');
@@ -68,4 +72,3 @@ describe('Auth Entity', () => {
     });
   });
 });
-
