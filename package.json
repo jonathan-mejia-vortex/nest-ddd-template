@@ -1,10 +1,10 @@
 {
-  "name": "be-backoffice-club-del-iphone",
-  "version": "0.0.1",
-  "description": "",
+  "name": "nest-ddd-template",
+  "version": "1.0.0",
+  "description": "Template NestJS con arquitectura DDD + Hexagonal, Prisma, JWT, Observabilidad y mejores prácticas empresariales",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
