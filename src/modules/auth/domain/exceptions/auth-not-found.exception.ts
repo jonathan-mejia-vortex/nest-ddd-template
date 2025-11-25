@@ -1,12 +1,12 @@
-import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
 export class AuthNotFoundException extends DomainException {
-  constructor(identifier?: string) {
-    super(
-      'AUTH_NOT_FOUND',
-      identifier
-        ? `Credencial con identificador ${identifier} no encontrada`
-        : 'Credencial no encontrada',
-    );
-  }
+	constructor(identifier?: string) {
+		super(
+			"AUTH_NOT_FOUND",
+			identifier
+				? `Credencial con identificador ${identifier} no encontrada`
+				: "Credencial no encontrada"
+		);
+	}
 }

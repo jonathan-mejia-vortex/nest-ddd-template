@@ -1,20 +1,25 @@
-version: '3'
+version: "3"
 
 services:
-  db:
+  postgres-template:
     # this is the connection in pgadmin when you are using the docker-compose
-    container_name: postgres_db
     image: postgres:15.1
+    container_name: postgres-template
     restart: always
-
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123123
+      POSTGRES_DB: template-db
     ports:
       - 5433:5432
     volumes:
-      - ./postgres:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123123
-      - POSTGRES_DB=monolith-db
+      - postgres-template-data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   pgAdmin:
     user: root
@@ -22,42 +27,47 @@ services:
     container_name: pgadmin
     restart: always
     depends_on:
-      - db
+      - postgres-template
     ports:
       - 8080:80
     environment:
-      - PGADMIN_DEFAULT_PASSWORD=123123
-      - PGADMIN_DEFAULT_EMAIL=user@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 123123
+      PGADMIN_DEFAULT_EMAIL: user@gmail.com
     volumes:
       - ./pgadmin:/var/lib/pgadmin
       - ./pgadmin:/certs/server.cert
       - ./pgadmin:/certs/server.key
       - ./pgadmin:/pgadmin4/servers.json
-  monolith:
-    build:
-      context: .
-      target: dev
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app/
-      - /app/node_modules
-    container_name: monolith-be
-    depends_on:
-      - db
+  redis:
+    image: redis:7-alpine
+    container_name: redis
     ports:
-      - 3000:3000
-    environment:
-      - DATABASE_URL=postgresql://postgres:123123@db:5432/monolith-db
-    # develop:
-    #   watch:
-    #     - action: sync
-    #       path: ./be/src
-    #       target: /app/src
-    #       ignore:
-    #         - node_modules/
-    #     - action: rebuild
-    #       path: package.json
+      - "6379:6379"
+  # template:
+  #   build:
+  #     context: .
+  #     target: dev
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/app/
+  #     - /app/node_modules
+  #   container_name: template-be
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:123123@db:5432/template-db
+  # develop:
+  #   watch:
+  #     - action: sync
+  #       path: ./be/src
+  #       target: /app/src
+  #       ignore:
+  #         - node_modules/
+  #     - action: rebuild
+  #       path: package.json
 
 volumes:
-  postgres-db:
+  postgres-template-data:
     external: false

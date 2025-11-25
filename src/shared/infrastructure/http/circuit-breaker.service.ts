@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import * as CircuitBreaker from 'opossum';
+import { Injectable, Logger } from "@nestjs/common";
+import * as CircuitBreaker from "opossum";
 
 export interface CircuitBreakerOptions {
-  timeout?: number; // Timeout en ms (default: 3000)
-  errorThresholdPercentage?: number; // % de errores antes de abrir (default: 50)
-  resetTimeout?: number; // Tiempo antes de intentar cerrar en ms (default: 30000)
-  rollingCountTimeout?: number; // Ventana de tiempo para conteo (default: 10000)
-  rollingCountBuckets?: number; // Número de buckets (default: 10)
-  name?: string; // Nombre del circuit breaker
+	timeout?: number; // Timeout en ms (default: 3000)
+	errorThresholdPercentage?: number; // % de errores antes de abrir (default: 50)
+	resetTimeout?: number; // Tiempo antes de intentar cerrar en ms (default: 30000)
+	rollingCountTimeout?: number; // Ventana de tiempo para conteo (default: 10000)
+	rollingCountBuckets?: number; // Número de buckets (default: 10)
+	name?: string; // Nombre del circuit breaker
 }
 
 /**
@@ -21,105 +21,108 @@ export interface CircuitBreakerOptions {
  */
 @Injectable()
 export class CircuitBreakerService {
-  private readonly logger = new Logger(CircuitBreakerService.name);
-  private breakers: Map<string, CircuitBreaker> = new Map();
+	private readonly logger = new Logger(CircuitBreakerService.name);
+	private breakers: Map<string, CircuitBreaker> = new Map();
 
-  /**
-   * Crea un Circuit Breaker para una función específica
-   * @param name Nombre único del circuit breaker
-   * @param fn Función a proteger
-   * @param options Opciones de configuración
-   * @returns Circuit Breaker configurado
-   */
-  create<T extends (...args: any[]) => Promise<any>>(
-    name: string,
-    fn: T,
-    options?: CircuitBreakerOptions,
-  ): CircuitBreaker<Parameters<T>, ReturnType<T>> {
-    if (this.breakers.has(name)) {
-      return this.breakers.get(name)!;
-    }
+	/**
+	 * Crea un Circuit Breaker para una función específica
+	 * @param name Nombre único del circuit breaker
+	 * @param fn Función a proteger
+	 * @param options Opciones de configuración
+	 * @returns Circuit Breaker configurado
+	 */
+	create<TArgs extends unknown[], TResult>(
+		name: string,
+		fn: (...args: TArgs) => Promise<TResult>,
+		options?: CircuitBreakerOptions
+	): CircuitBreaker<TArgs, Promise<TResult>> {
+		if (this.breakers.has(name)) {
+			const existing = this.breakers.get(name);
+			if (existing) {
+				return existing as CircuitBreaker<TArgs, Promise<TResult>>;
+			}
+		}
 
-    const breakerOptions = {
-      timeout: options?.timeout || 3000,
-      errorThresholdPercentage: options?.errorThresholdPercentage || 50,
-      resetTimeout: options?.resetTimeout || 30000,
-      rollingCountTimeout: options?.rollingCountTimeout || 10000,
-      rollingCountBuckets: options?.rollingCountBuckets || 10,
-      name: options?.name || name,
-    };
+		const breakerOptions = {
+			timeout: options?.timeout || 3000,
+			errorThresholdPercentage: options?.errorThresholdPercentage || 50,
+			resetTimeout: options?.resetTimeout || 30000,
+			rollingCountTimeout: options?.rollingCountTimeout || 10000,
+			rollingCountBuckets: options?.rollingCountBuckets || 10,
+			name: options?.name || name,
+		};
 
-    const breaker = new CircuitBreaker(fn, breakerOptions);
+		const breaker = new CircuitBreaker(fn, breakerOptions);
 
-    // Eventos para logging
-    breaker.on('open', () => {
-      this.logger.warn(`Circuit Breaker OPEN: ${name}`);
-    });
+		// Eventos para logging
+		breaker.on("open", () => {
+			this.logger.warn(`Circuit Breaker OPEN: ${name}`);
+		});
 
-    breaker.on('halfOpen', () => {
-      this.logger.log(`Circuit Breaker HALF_OPEN: ${name}`);
-    });
+		breaker.on("halfOpen", () => {
+			this.logger.log(`Circuit Breaker HALF_OPEN: ${name}`);
+		});
 
-    breaker.on('close', () => {
-      this.logger.log(`Circuit Breaker CLOSED: ${name}`);
-    });
+		breaker.on("close", () => {
+			this.logger.log(`Circuit Breaker CLOSED: ${name}`);
+		});
 
-    breaker.on('timeout', () => {
-      this.logger.error(`Circuit Breaker TIMEOUT: ${name}`);
-    });
+		breaker.on("timeout", () => {
+			this.logger.error(`Circuit Breaker TIMEOUT: ${name}`);
+		});
 
-    breaker.on('failure', (error) => {
-      this.logger.error(`Circuit Breaker FAILURE: ${name} - ${error.message}`);
-    });
+		breaker.on("failure", (error) => {
+			this.logger.error(`Circuit Breaker FAILURE: ${name} - ${error.message}`);
+		});
 
-    this.breakers.set(name, breaker);
-    return breaker;
-  }
+		this.breakers.set(name, breaker);
+		return breaker;
+	}
 
-  /**
-   * Obtiene un Circuit Breaker existente
-   * @param name Nombre del circuit breaker
-   * @returns Circuit Breaker o undefined
-   */
-  get(name: string): CircuitBreaker | undefined {
-    return this.breakers.get(name);
-  }
+	/**
+	 * Obtiene un Circuit Breaker existente
+	 * @param name Nombre del circuit breaker
+	 * @returns Circuit Breaker o undefined
+	 */
+	get(name: string): CircuitBreaker | undefined {
+		return this.breakers.get(name);
+	}
 
-  /**
-   * Obtiene estadísticas de todos los circuit breakers
-   */
-  getStats(): Record<string, any> {
-    const stats: Record<string, any> = {};
+	/**
+	 * Obtiene estadísticas de todos los circuit breakers
+	 */
+	getStats(): Record<string, unknown> {
+		const stats: Record<string, unknown> = {};
 
-    this.breakers.forEach((breaker, name) => {
-      stats[name] = {
-        state: breaker.opened ? 'OPEN' : 'CLOSED',
-        stats: breaker.stats,
-      };
-    });
+		this.breakers.forEach((breaker, name) => {
+			stats[name] = {
+				state: breaker.opened ? "OPEN" : "CLOSED",
+				stats: breaker.stats,
+			};
+		});
 
-    return stats;
-  }
+		return stats;
+	}
 
-  /**
-   * Cierra manualmente un circuit breaker
-   * @param name Nombre del circuit breaker
-   */
-  close(name: string): void {
-    const breaker = this.breakers.get(name);
-    if (breaker) {
-      breaker.close();
-    }
-  }
+	/**
+	 * Cierra manualmente un circuit breaker
+	 * @param name Nombre del circuit breaker
+	 */
+	close(name: string): void {
+		const breaker = this.breakers.get(name);
+		if (breaker) {
+			breaker.close();
+		}
+	}
 
-  /**
-   * Abre manualmente un circuit breaker
-   * @param name Nombre del circuit breaker
-   */
-  open(name: string): void {
-    const breaker = this.breakers.get(name);
-    if (breaker) {
-      breaker.open();
-    }
-  }
+	/**
+	 * Abre manualmente un circuit breaker
+	 * @param name Nombre del circuit breaker
+	 */
+	open(name: string): void {
+		const breaker = this.breakers.get(name);
+		if (breaker) {
+			breaker.open();
+		}
+	}
 }
