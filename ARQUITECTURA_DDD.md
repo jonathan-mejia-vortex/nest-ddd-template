@@ -539,6 +539,12 @@ Interfaces específicas por dominio.
 ### Dependency Inversion
 Las capas superiores dependen de abstracciones, no de implementaciones.
 
+## 📚 Documentación Adicional
+
+- **`docs/CONFIGURACION.md`**: Guía completa de configuración de todas las características
+- **`docs/PATRONES.md`**: Patrones de diseño implementados con ejemplos
+- **`README.md`**: Guía rápida de inicio y características principales
+
 ## 🔗 Referencias
 
 - [Domain-Driven Design - Eric Evans](https://www.domainlanguage.com/ddd/)
@@ -546,6 +552,8 @@ Las capas superiores dependen de abstracciones, no de implementaciones.
 - [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
+- [Circuit Breaker Pattern](https://martinfowler.com/bliki/CircuitBreaker.html)
+- [Idempotency Keys](https://brandur.org/idempotency-keys)
 
 ---
 

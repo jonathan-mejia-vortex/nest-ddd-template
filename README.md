@@ -300,15 +300,36 @@ Migraciones: `prisma/migrations/`
 ✅ **Arquitectura**: DDD + Hexagonal  
 ✅ **Cobertura**: Tests e2e implementados  
 
+## 🎯 Características Avanzadas
+
+### Observabilidad
+- **Logging Estructurado**: Pino + AWS CloudWatch Logs (batch)
+- **Métricas**: AWS CloudWatch Metrics automáticas (latencia, requests, errores)
+- **Tracing**: OpenTelemetry + AWS X-Ray (distributed tracing)
+- **Correlation ID**: Rastreo automático de requests end-to-end
+
+### Resiliencia
+- **Circuit Breakers**: Protección con opossum para llamadas HTTP externas
+- **Retry Logic**: Reintentos automáticos con backoff exponencial
+- **Idempotencia**: Guard + Service para prevenir ejecuciones duplicadas
+- **HTTP Clients**: ErpClient y WmsClient con circuit breaker integrado
+
+### Mensajería
+- **SQS Client**: Interface con implementación mock (listo para AWS SQS)
+- **Event-Driven**: Preparado para arquitectura basada en eventos
+
+### Performance
+- **Paginación**: Limit/offset en queries con count paralelo
+- **Índices Optimizados**: email, authId, role, timestamps
+- **Connection Pooling**: Prisma con pool automático
+- **Batch Processing**: CloudWatch Logs/Metrics usan buffers
+
 ## 📝 Próximas Mejoras (Roadmap)
 
 - [ ] Refresh tokens
 - [ ] Multi-factor authentication (MFA)
-- [ ] Implementar SQS para eventos de dominio
-- [ ] Agregar idempotencia en endpoints críticos
-- [ ] Mejorar logging con correlation ID
-- [ ] Implementar circuit breakers para servicios externos
-- [ ] Agregar métricas y observabilidad
+- [ ] Reemplazar SQS Mock con AWS SQS real
+- [ ] Implementar Rate Limiting
 - [ ] Migrar a Fastify para mejor performance
 
 ## 🤝 Contribución
