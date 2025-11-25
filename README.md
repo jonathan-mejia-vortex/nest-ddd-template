@@ -16,9 +16,9 @@ Para más detalles, consulta [ARQUITECTURA_DDD.md](./ARQUITECTURA_DDD.md).
 ## 🚀 Stack Tecnológico
 
 - **Framework**: NestJS 11.x
-- **Base de Datos**: PostgreSQL con Sequelize
+- **Base de Datos**: PostgreSQL con Prisma ORM
 - **Caché**: Redis (ioredis + cache-manager)
-- **Autenticación**: JWT + Passport (local & jwt strategies)
+- **Autenticación**: JWT Custom (sin Passport)
 - **Validación**: class-validator + class-transformer
 - **Testing**: Jest (unit + e2e)
 - **Arquitectura**: DDD + Hexagonal
@@ -72,7 +72,10 @@ cp .env.example .env
 
 Variables requeridas:
 ```env
-# Database
+# Database (Prisma)
+DATABASE_URL="postgresql://postgres:your_password@localhost:5432/auth_db?schema=public"
+
+# Database individual params (para referencia)
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
@@ -94,6 +97,7 @@ REDIS_PORT=6379
 
 # Server
 PORT=3000
+NODE_ENV=development
 ```
 
 4. **Crear base de datos**
@@ -102,9 +106,16 @@ createdb auth_db
 createdb auth_db_test
 ```
 
-5. **Ejecutar migraciones**
+5. **Generar cliente de Prisma**
 ```bash
-npm run migration:run
+npm run prisma:generate
+```
+
+6. **Aplicar migraciones (dev)**
+```bash
+npm run prisma:push
+# O crear migración:
+npx prisma migrate dev --name init
 ```
 
 ## 🎯 Comandos Disponibles
@@ -117,15 +128,13 @@ npm run build              # Compilar proyecto
 npm run start:prod         # Iniciar en producción
 ```
 
-### Base de Datos
+### Base de Datos (Prisma)
 ```bash
-npm run migration:generate -- nombre-migracion  # Crear nueva migración
-npm run migration:run                           # Ejecutar migraciones pendientes
-npm run migration:undo                          # Revertir última migración
-
-# Solo para desarrollo (no usar en producción)
-npm run sync:alter         # Sincronizar con alter
-npm run sync:force         # Sincronizar con force (destruye datos)
+npm run prisma:generate                # Generar cliente de Prisma
+npm run prisma:push                    # Push schema sin migración (dev)
+npm run prisma:migrate                 # Crear y aplicar migración
+npm run prisma:migrate:deploy          # Aplicar migraciones (producción)
+npm run prisma:studio                  # Abrir Prisma Studio (GUI)
 ```
 
 ### Testing
@@ -190,8 +199,8 @@ Authorization: Bearer <token>
 
 ### Arquitectura Hexagonal
 - **Puertos**: Interfaces en capa de dominio
-- **Adaptadores**: Implementaciones en infraestructura
-- **Independencia de Framework**: Dominio sin dependencias externas
+- **Adaptadores**: Implementaciones en infraestructura (Prisma)
+- **Independencia de Framework**: Dominio sin dependencias de Prisma
 
 ### SOLID Principles
 - Single Responsibility
@@ -213,8 +222,7 @@ npm run test -- user.entity
 
 ### Tests E2E
 ```bash
-# Requiere base de datos de test
-npm run sync:test  # Primera vez
+# Requiere base de datos de test configurada
 npm run test:e2e
 ```
 
@@ -239,38 +247,45 @@ En pgAdmin:
 ## 📚 Documentación Adicional
 
 - [ARQUITECTURA_DDD.md](./ARQUITECTURA_DDD.md) - Guía completa de arquitectura
+- [MIGRACION_PRISMA.md](./MIGRACION_PRISMA.md) - Migración de Sequelize a Prisma
 
-## 🔄 Migraciones
+## 🔄 Migraciones con Prisma
 
-Las migraciones se manejan con Sequelize CLI:
+Las migraciones se manejan con Prisma CLI:
 
 ```bash
 # Crear migración
-npm run migration:generate -- add-new-field
+npx prisma migrate dev --name add-new-field
 
-# Ejecutar migraciones
-npm run migration:run
+# Aplicar migraciones (producción)
+npm run prisma:migrate:deploy
 
-# Revertir última migración
-npm run migration:undo
+# Push schema sin migración (desarrollo)
+npm run prisma:push
+
+# Visualizar base de datos
+npm run prisma:studio
 ```
 
-Ubicación: `migrations/`
+Schema: `prisma/schema.prisma`  
+Migraciones: `prisma/migrations/`
 
 ## 🛡️ Seguridad
 
 - Passwords hasheados con bcrypt
-- JWT para autenticación stateless
-- Guards para protección de rutas
+- JWT para autenticación stateless (sin Passport)
+- Custom JwtAuthGuard para protección de rutas
 - Validación de DTOs con class-validator
 - Roles y permisos implementados
+- @CurrentUser() decorator para acceso al usuario
 
 ## 📊 Performance
 
-- **Pool de conexiones DB**: max 20, min 5
+- **Prisma**: Connection pooling automático
 - **Redis**: Caché configurado (TTL 1h)
 - **Índices críticos**: authId, email, role
-- **Transacciones**: Manejadas con TransactionService
+- **Transacciones**: Manejadas con TransactionService + Prisma
+- **Type-safety**: TypeScript end-to-end con Prisma Client
 
 ## 🚧 Estado del Proyecto
 
@@ -281,6 +296,8 @@ Ubicación: `migrations/`
 
 ## 📝 Próximas Mejoras (Roadmap)
 
+- [ ] Refresh tokens
+- [ ] Multi-factor authentication (MFA)
 - [ ] Implementar SQS para eventos de dominio
 - [ ] Agregar idempotencia en endpoints críticos
 - [ ] Mejorar logging con correlation ID
