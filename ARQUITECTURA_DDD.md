@@ -86,19 +86,17 @@ src/
 │   │   ├── users.controller.ts      # Controller delgado (solo delega)
 │   │   └── auth.controller.ts
 │   ├── guards/
-│   │   ├── jwt-auth.guard.ts
-│   │   ├── local-auth.guard.ts
+│   │   ├── jwt-auth.guard.ts        # Guard custom JWT (sin Passport)
 │   │   ├── roles.guard.ts
 │   │   └── roles.decorator.ts
-│   ├── strategies/
-│   │   ├── jwt.strategy.ts
-│   │   └── local.strategy.ts
+│   ├── decorators/
+│   │   └── current-user.decorator.ts # @CurrentUser() decorator
 │   └── api.module.ts
 │
 ├── config/
 │   └── envs.ts
-├── db/
-│   └── db.module.ts
+├── prisma/
+│   └── schema.prisma                # Schema de base de datos
 └── app.module.ts
 ```
 
@@ -129,14 +127,20 @@ export interface IUserRepository {
 // Adaptador (en infraestructura) - Define CÓMO se implementa
 @Injectable()
 export class UserRepositoryImpl implements IUserRepository {
-  constructor(
-    @InjectModel(UserSequelizeEntity)
-    private readonly userModel: typeof UserSequelizeEntity,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(user: User, transaction?: any): Promise<User> {
-    // Implementación con Sequelize
-    const created = await this.userModel.create({...}, transaction);
+    const prismaClient = transaction || this.prisma;
+    
+    const created = await prismaClient.user.create({
+      data: {
+        id: user.id,
+        name: user.name,
+        authId: user.authId,
+        role: user.role,
+      },
+    });
+    
     return User.fromPersistence(created);
   }
 }
@@ -274,7 +278,7 @@ export class PasswordService {
    ├─ Llamadas a entidades de dominio
    ↓
 4. Repository (Infrastructure Layer)
-   ├─ Implementación con Sequelize
+   ├─ Implementación con Prisma
    ├─ Conversión entre entidades de dominio y persistencia
    ↓
 5. Database
@@ -359,10 +363,7 @@ export class CreateAuthUseCase {
 ```typescript
 @Injectable()
 export class AuthRepositoryImpl implements IAuthRepository {
-  constructor(
-    @InjectModel(AuthSequelizeEntity)
-    private readonly authModel: typeof AuthSequelizeEntity,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(auth: Auth, transaction?: any): Promise<Auth> {
     try {
@@ -385,7 +386,8 @@ export class AuthRepositoryImpl implements IAuthRepository {
         updatedAt: created.updatedAt,
       });
     } catch (error) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
+      // Prisma unique constraint error
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new EmailAlreadyExistsException(auth.email);
       }
       throw new Error(`Error al crear auth: ${error.message}`);
@@ -417,9 +419,10 @@ export class AuthRepositoryImpl implements IAuthRepository {
 
 ### Seguridad
 
-- ✅ **JWT Authentication**: Autenticación basada en tokens
+- ✅ **JWT Authentication**: Autenticación basada en tokens con @nestjs/jwt
 - ✅ **Password Hashing**: bcrypt con salt rounds configurables
-- ✅ **Guards**: JwtAuthGuard, LocalAuthGuard, RolesGuard
+- ✅ **Custom Guards**: JwtAuthGuard (sin Passport), RolesGuard
+- ✅ **@CurrentUser() Decorator**: Acceso al usuario autenticado
 - ✅ **Validation**: class-validator en todos los DTOs
 
 ### Bounded Contexts
