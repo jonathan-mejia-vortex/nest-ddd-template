@@ -8,8 +8,8 @@ Este proyecto implementa una arquitectura limpia con separación en capas:
 
 - **Domain Layer**: Entidades de dominio, repositorios (puertos), excepciones de negocio
 - **Application Layer**: Casos de uso, DTOs, lógica de orquestación
-- **Infrastructure Layer**: Implementaciones de persistencia (Sequelize), Redis, servicios externos
-- **API Layer**: Controllers delgados, guards, strategies
+- **Infrastructure Layer**: Implementaciones de persistencia (Prisma), Redis, servicios externos
+- **API Layer**: Controllers delgados, guards custom JWT
 
 Para más detalles, consulta [ARQUITECTURA_DDD.md](./ARQUITECTURA_DDD.md).
 
@@ -27,19 +27,26 @@ Para más detalles, consulta [ARQUITECTURA_DDD.md](./ARQUITECTURA_DDD.md).
 
 ```
 src/
-├── api/                    # API Layer (Controllers, Guards, Strategies)
+├── api/                    # API Layer (Controllers, Guards custom)
 ├── modules/                # Bounded Contexts
 │   ├── users/             # Gestión de usuarios
+│   │   ├── domain/        # Entidades, interfaces, excepciones
+│   │   ├── application/   # Use cases, DTOs
+│   │   └── infrastructure/# Prisma repositories
 │   └── auth/              # Autenticación y autorización
+│       ├── domain/        # Entidades, interfaces, excepciones, PasswordService
+│       ├── application/   # Use cases, DTOs
+│       └── infrastructure/# Prisma repositories
 ├── shared/                 # Infraestructura compartida
-│   ├── domain/            # Excepciones de dominio
+│   ├── domain/            # Excepciones base
 │   ├── application/       # Filters globales
-│   └── infrastructure/    # Redis, TransactionService
+│   └── infrastructure/    # PrismaService, TransactionService, Redis
 ├── common/                 # Utilidades comunes
 │   ├── dto/               # DTOs compartidos (pagination, interceptors)
-│   └── types.ts           # Tipos y enums globales
-├── config/                 # Configuración
-├── db/                     # Módulo de base de datos
+│   └── types.ts           # Tipos y enums globales (ROLE)
+├── config/                 # Configuración (envs.ts)
+├── prisma/                 # Prisma ORM
+│   └── schema.prisma      # Schema de base de datos
 └── app.module.ts          # Módulo raíz
 ```
 

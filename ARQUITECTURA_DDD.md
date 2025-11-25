@@ -79,7 +79,7 @@ src/
 │   ├── dto/
 │   │   ├── pagination.dto.ts
 │   │   └── response.interceptor.ts
-│   └── types.ts                     # Tipos y enums globales (ROLE, TransactionHost)
+│   └── types.ts                     # Tipos y enums globales (ROLE)
 │
 ├── api/                              # Capa de API (controllers y guards)
 │   ├── controllers/
@@ -300,7 +300,7 @@ export class AuthController {
 
   @Post('/signup')
   async create(@Body() createAuthDto: CreateAuthDto) {
-    return await this.transactionService.executeInTransaction(async (t) => {
+    return await this.transactionService.runInTransaction(async (tx) => {
       await this.createAuthUseCase.execute(
         {
           email: createAuthDto.email,
@@ -308,7 +308,7 @@ export class AuthController {
           name: createAuthDto.name,
           role: createAuthDto.role,
         },
-        { transaction: t },
+        tx,
       );
       return { message: 'Usuario registrado correctamente' };
     });
@@ -367,15 +367,16 @@ export class AuthRepositoryImpl implements IAuthRepository {
 
   async create(auth: Auth, transaction?: any): Promise<Auth> {
     try {
+      const prismaClient = transaction || this.prisma;
+
       // Conversión de dominio a persistencia
-      const created = await this.authModel.create(
-        {
+      const created = await prismaClient.auth.create({
+        data: {
           id: auth.id,
           email: auth.email,
           password: auth.password,
         },
-        transaction ? { transaction } : undefined,
-      );
+      });
 
       // Conversión de persistencia a dominio
       return Auth.fromPersistence({
@@ -413,7 +414,7 @@ export class AuthRepositoryImpl implements IAuthRepository {
 
 ### Cross-Cutting Concerns
 
-- ✅ **Types & Enums**: Tipos compartidos (ROLE, TransactionHost)
+- ✅ **Types & Enums**: Tipos compartidos (ROLE)
 - ✅ **Interceptors**: Response interceptor para formato unificado
 - ✅ **DTOs Comunes**: Pagination y otros DTOs reutilizables
 
@@ -435,12 +436,8 @@ export class AuthRepositoryImpl implements IAuthRepository {
 ### Variables de Entorno
 
 ```env
-# Base de datos
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=password
-DB_DATABASE=auth_db
+# Base de datos (Prisma)
+DATABASE_URL="postgresql://postgres:password@localhost:5432/auth_db?schema=public"
 
 # JWT
 JWT_SECRET=your-secret-key
@@ -452,6 +449,7 @@ REDIS_PORT=6379
 
 # Servidor
 PORT=3000
+NODE_ENV=development
 ```
 
 ### Comandos
@@ -460,10 +458,12 @@ PORT=3000
 # Desarrollo
 npm run start:dev
 
-# Migraciones
-npm run migration:generate -- nombre-migracion
-npm run migration:run
-npm run migration:undo
+# Prisma
+npm run prisma:generate              # Generar cliente Prisma
+npm run prisma:push                  # Push schema (dev)
+npx prisma migrate dev --name init   # Crear migración
+npm run prisma:migrate:deploy        # Aplicar migraciones (prod)
+npm run prisma:studio                # Abrir GUI
 
 # Tests
 npm run test
