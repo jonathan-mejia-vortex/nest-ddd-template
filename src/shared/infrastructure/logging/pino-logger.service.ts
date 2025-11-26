@@ -33,7 +33,7 @@ export class PinoLoggerService implements LoggerService {
 			},
 			timestamp: pino.stdTimeFunctions.isoTime,
 			base: {
-				service: "ms-auth",
+				service: "nest-ddd-microservice-template",
 				environment: envs.nodeEnv,
 			},
 		});

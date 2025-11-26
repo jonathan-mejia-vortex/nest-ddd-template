@@ -35,7 +35,7 @@ const envsSchema = joi
 		ERP_API_URL: joi.string().default("http://localhost:3001/api"),
 		WMS_API_URL: joi.string().default("http://localhost:3002/api"),
 		AWS_REGION: joi.string().default("us-east-1"),
-		AWS_CLOUDWATCH_LOG_GROUP: joi.string().default("/aws/ms-auth"),
+		AWS_CLOUDWATCH_LOG_GROUP: joi.string().default("/aws/nest-ddd-microservice-template"),
 		AWS_CLOUDWATCH_LOG_STREAM: joi.string().default("application"),
 		NODE_ENV: joi.string().default("development"),
 	})

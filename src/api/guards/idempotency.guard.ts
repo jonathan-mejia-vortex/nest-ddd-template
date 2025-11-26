@@ -1,7 +1,9 @@
 import type { CanActivate, ExecutionContext } from "@nestjs/common";
 import { ConflictException, Injectable } from "@nestjs/common";
-import type { Reflector } from "@nestjs/core";
-import type { IdempotencyService } from "../../shared/infrastructure/idempotency/idempotency.service";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { Reflector } from "@nestjs/core";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { IdempotencyService } from "../../shared/infrastructure/idempotency/idempotency.service";
 
 export const IDEMPOTENCY_KEY = "idempotency";
 

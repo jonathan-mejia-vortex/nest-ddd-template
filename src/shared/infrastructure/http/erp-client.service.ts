@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { envs } from "../../../config/envs";
-import type { CircuitBreakerService } from "./circuit-breaker.service";
+import { CircuitBreakerService } from "./circuit-breaker.service";
 import type { RequestOptions } from "./http-client-base.service";
 import { HttpClientBase } from "./http-client-base.service";
 

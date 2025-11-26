@@ -1,10 +1,10 @@
-import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import {
 	CloudWatchClient,
 	PutMetricDataCommand,
-	type MetricDatum,
 	StandardUnit,
+	type MetricDatum,
 } from "@aws-sdk/client-cloudwatch";
+import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import { envs } from "../../../config/envs";
 
 export interface MetricData {
@@ -37,7 +37,7 @@ export class CloudWatchMetricsService implements OnModuleInit {
 	private readonly logger = new Logger(CloudWatchMetricsService.name);
 	private client: CloudWatchClient | null = null;
 	private metricsBuffer: MetricDatum[] = [];
-	private readonly NAMESPACE = "MS-Auth";
+	private readonly NAMESPACE = "Nest-DDD-Microservice-Template";
 	private readonly BATCH_SIZE = 20; // CloudWatch acepta max 20 métricas por request
 	private readonly BATCH_INTERVAL = 60000; // 1 minuto
 	private flushTimer: NodeJS.Timeout | null = null;

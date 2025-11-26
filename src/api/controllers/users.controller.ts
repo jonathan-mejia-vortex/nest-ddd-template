@@ -3,8 +3,10 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@ne
 import type { PaginationQueryDto } from "../../common/dto/pagination-query.dto";
 import { ROLE } from "../../common/types";
 import type { UpdateUserDto } from "../../modules/users/application/dto/update-user.dto";
-import type { GetAllUsersUseCase } from "../../modules/users/application/use-cases/get-all-users.use-case";
-import type { UpdateUserUseCase } from "../../modules/users/application/use-cases/update-user.use-case";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { GetAllUsersUseCase } from "../../modules/users/application/use-cases/get-all-users.use-case";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { UpdateUserUseCase } from "../../modules/users/application/use-cases/update-user.use-case";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { Roles } from "../guards/roles.decorator";
 import { RolesGuard } from "../guards/roles.guard";

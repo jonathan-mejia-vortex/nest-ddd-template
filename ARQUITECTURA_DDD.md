@@ -1,4 +1,4 @@
-# Arquitectura DDD + Hexagonal - Microservicio Auth
+# Arquitectura DDD + Hexagonal - Template de Microservicio
 
 ## 📋 Introducción
 

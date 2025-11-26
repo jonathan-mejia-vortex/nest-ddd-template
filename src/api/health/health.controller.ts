@@ -1,8 +1,11 @@
 import { Controller, Get } from "@nestjs/common";
 import type { HealthCheckResult } from "@nestjs/terminus";
-import { HealthCheck, type HealthCheckService } from "@nestjs/terminus";
-import type { PrismaHealthIndicator } from "./indicators/prisma-health.indicator";
-import type { RedisHealthIndicator } from "./indicators/redis-health.indicator";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { HealthCheck, HealthCheckService } from "@nestjs/terminus";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { PrismaHealthIndicator } from "./indicators/prisma-health.indicator";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { RedisHealthIndicator } from "./indicators/redis-health.indicator";
 
 @Controller("health")
 export class HealthController {

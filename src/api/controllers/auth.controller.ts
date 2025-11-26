@@ -8,10 +8,14 @@ import {
 } from "@nestjs/swagger";
 import type { CreateAuthDto } from "../../modules/auth/application/dto/create-auth.dto";
 import type { LoginDto } from "../../modules/auth/application/dto/login.dto";
-import type { CreateAuthUseCase } from "../../modules/auth/application/use-cases/create-auth.use-case";
-import type { LoginUseCase } from "../../modules/auth/application/use-cases/login.use-case";
-import type { ValidateUserUseCase } from "../../modules/auth/application/use-cases/validate-user.use-case";
-import type { TransactionService } from "../../shared/infrastructure/persistence/transaction.service";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { CreateAuthUseCase } from "../../modules/auth/application/use-cases/create-auth.use-case";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { LoginUseCase } from "../../modules/auth/application/use-cases/login.use-case";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { ValidateUserUseCase } from "../../modules/auth/application/use-cases/validate-user.use-case";
+// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { TransactionService } from "../../shared/infrastructure/persistence/transaction.service";
 
 /**
  * AuthController - Controlador delgado sin Passport

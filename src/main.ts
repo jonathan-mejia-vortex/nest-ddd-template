@@ -10,7 +10,7 @@ import { ResponseInterceptor } from "./common/dto/response.interceptor";
 import { envs } from "./config/envs";
 
 async function bootstrap() {
-	const logger = new Logger("MS-Auth");
+	const logger = new Logger("Nest DDD Microservice Template");
 	const app = await NestFactory.create(AppModule);
 
 	app.setGlobalPrefix("api", {
@@ -34,8 +34,8 @@ async function bootstrap() {
 	});
 
 	const config = new DocumentBuilder()
-		.setTitle("MS-Auth API")
-		.setDescription("Microservicio de Autenticación y Autorización - DDD + Hexagonal")
+		.setTitle("Nest DDD Microservice Template API")
+		.setDescription("Template de microservicio con NestJS utilizando DDD + Arquitectura Hexagonal")
 		.setVersion("1.0.0")
 		.addTag("Auth")
 		.addTag("Users")
@@ -47,7 +47,7 @@ async function bootstrap() {
 	app.enableCors();
 
 	await app.listen(process.env.PORT ?? 3000);
-	logger.log(`Auth microservice running on port: ${envs.port}`);
+	logger.log(`Microservice running on port: ${envs.port}`);
 	logger.log(`Environment: ${envs.nodeEnv}`);
 	logger.log(`Documentation available at http://localhost:${envs.port}/docs`);
 }
