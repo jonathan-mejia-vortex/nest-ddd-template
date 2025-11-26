@@ -12,6 +12,7 @@ import { RolesGuard } from "./guards/roles.guard";
 import { CorrelationIdInterceptor } from "./interceptors/correlation-id.interceptor";
 import { LoggingInterceptor } from "./interceptors/logging.interceptor";
 import { MetricsInterceptor } from "./interceptors/metrics.interceptor";
+import { ResponseInterceptor } from "./interceptors/response.interceptor";
 
 /**
  * ApiModule - Módulo de la capa de API
@@ -19,7 +20,7 @@ import { MetricsInterceptor } from "./interceptors/metrics.interceptor";
  * Incluye:
  * - Controllers delgados (auth, users)
  * - Guards custom (JWT, Roles, Idempotency)
- * - Interceptors globales (CorrelationId, Logging, Metrics)
+ * - Interceptors globales (CorrelationId, Response, Logging, Metrics)
  */
 @Module({
 	imports: [AuthModule, UserModule, SharedModule, HealthModule],
@@ -29,10 +30,14 @@ import { MetricsInterceptor } from "./interceptors/metrics.interceptor";
 		JwtAuthGuard,
 		RolesGuard,
 		IdempotencyGuard,
-		// Interceptors globales (registrados automáticamente)
+		// Interceptors globales (orden: CorrelationId → Response → Logging → Metrics)
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: CorrelationIdInterceptor,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: ResponseInterceptor,
 		},
 		{
 			provide: APP_INTERCEPTOR,

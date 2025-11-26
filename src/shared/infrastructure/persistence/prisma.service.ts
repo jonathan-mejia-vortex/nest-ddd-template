@@ -23,14 +23,10 @@ export class PrismaService
 
 		// Log de queries en desarrollo
 		if (process.env.NODE_ENV === "development") {
-			this.$on("query", (e: unknown) => {
-				const event = e as { query?: string; duration?: number };
-				if (event.query) {
-					this.logger.debug(`Query: ${event.query}`);
-				}
-				if (typeof event.duration === "number") {
-					this.logger.debug(`Duration: ${event.duration}ms`);
-				}
+			// @ts-ignore - Prisma types issue with event emitter
+			this.$on("query", (e: { query: string; duration: number }) => {
+				this.logger.debug(`Query: ${e.query}`);
+				this.logger.debug(`Duration: ${e.duration}ms`);
 			});
 		}
 	}

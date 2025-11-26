@@ -6,11 +6,11 @@ import { Logger, RequestMethod, ValidationPipe, VersioningType } from "@nestjs/c
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
-import { ResponseInterceptor } from "./common/dto/response.interceptor";
+// ResponseInterceptor se registra globalmente en ApiModule
 import { envs } from "./config/envs";
 
 async function bootstrap() {
-	const logger = new Logger("Nest DDD Microservice Template");
+	const logger = new Logger(envs.serviceName || "NestDDDTemplate");
 	const app = await NestFactory.create(AppModule);
 
 	app.setGlobalPrefix("api", {
@@ -20,7 +20,7 @@ async function bootstrap() {
 		],
 	});
 
-	app.useGlobalInterceptors(new ResponseInterceptor());
+	// ResponseInterceptor se registra globalmente en ApiModule (usando APP_INTERCEPTOR)
 
 	app.useGlobalPipes(
 		new ValidationPipe({
@@ -34,8 +34,8 @@ async function bootstrap() {
 	});
 
 	const config = new DocumentBuilder()
-		.setTitle("Nest DDD Microservice Template API")
-		.setDescription("Template de microservicio con NestJS utilizando DDD + Arquitectura Hexagonal")
+		.setTitle(`${envs.serviceName} API`)
+		.setDescription("Microservicio con arquitectura DDD + Hexagonal, Prisma, JWT y Observabilidad")
 		.setVersion("1.0.0")
 		.addTag("Auth")
 		.addTag("Users")

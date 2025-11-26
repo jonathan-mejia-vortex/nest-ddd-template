@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🧪 Running pre-push checks..."
+
+# 1. Ejecutar tests unitarios
+echo "⚡ Running unit tests..."
+yarn test --passWithNoTests
+
+if [ $? -ne 0 ]; then
+	echo "❌ Unit tests failed. Push aborted."
+	exit 1
+fi
+
+# 2. Ejecutar tests de integración/e2e (opcional, comentar si no hay DB en CI)
+# echo "🔬 Running e2e tests..."
+# yarn test:e2e
+
+# if [ $? -ne 0 ]; then
+# 	echo "❌ E2E tests failed. Push aborted."
+# 	exit 1
+# fi
+
+echo "✅ All pre-push checks passed!"
+

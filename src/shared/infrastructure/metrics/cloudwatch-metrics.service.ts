@@ -219,6 +219,20 @@ export class CloudWatchMetricsService implements OnModuleInit {
 	}
 
 	/**
+	 * Registra el número de requests activas concurrentes
+	 */
+	async recordActiveRequests(count: number): Promise<void> {
+		await this.putMetric({
+			metricName: "ActiveRequests",
+			value: count,
+			unit: "count",
+			dimensions: {
+				Environment: envs.nodeEnv,
+			},
+		});
+	}
+
+	/**
 	 * Registra duración de query a DB
 	 */
 	async recordDatabaseQueryDuration(operation: string, duration: number): Promise<void> {

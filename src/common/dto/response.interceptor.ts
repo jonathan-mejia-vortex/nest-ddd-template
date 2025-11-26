@@ -31,7 +31,6 @@ export class ResponseInterceptor implements NestInterceptor {
 			const errorIsObject = typeof errorResponse === "object";
 			const errorIsNull = errorResponse === null;
 			const isHttpException = typeof errorResponse === "string";
-			console.log({ errorResponse });
 			if (errorIsObject && !errorIsNull) {
 				// Validation error
 				const hasMessage = "message" in errorResponse;

@@ -61,7 +61,7 @@ WMS_API_URL=http://localhost:3002/api
 AWS_REGION=us-east-1
 
 # CloudWatch Logs
-AWS_CLOUDWATCH_LOG_GROUP=/aws/nest-ddd-microservice-template
+AWS_CLOUDWATCH_LOG_GROUP=/aws/nest-ddd-template
 AWS_CLOUDWATCH_LOG_STREAM=application
 
 # Credenciales (o usar IAM Roles en EC2/ECS)

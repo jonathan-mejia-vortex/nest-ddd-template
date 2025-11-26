@@ -64,7 +64,7 @@ src/
 1. **Clonar el repositorio**
 ```bash
 git clone <repository-url>
-cd nest-ddd-microservice-template
+cd nest-ddd-template
 ```
 
 2. **Instalar dependencias**

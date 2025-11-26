@@ -2,6 +2,7 @@ import "dotenv/config.js";
 import * as joi from "joi";
 
 interface EnvVars {
+	SERVICE_NAME: string;
 	DB_HOST: string;
 	DB_PORT: string;
 	DB_USERNAME: string;
@@ -22,6 +23,7 @@ interface EnvVars {
 
 const envsSchema = joi
 	.object({
+		SERVICE_NAME: joi.string().default("nest-ddd-template"),
 		DB_HOST: joi.string().required(),
 		DB_PORT: joi.string().required(),
 		DB_USERNAME: joi.string().required(),
@@ -35,7 +37,7 @@ const envsSchema = joi
 		ERP_API_URL: joi.string().default("http://localhost:3001/api"),
 		WMS_API_URL: joi.string().default("http://localhost:3002/api"),
 		AWS_REGION: joi.string().default("us-east-1"),
-		AWS_CLOUDWATCH_LOG_GROUP: joi.string().default("/aws/nest-ddd-microservice-template"),
+		AWS_CLOUDWATCH_LOG_GROUP: joi.string().default("/aws/nest-ddd-template"),
 		AWS_CLOUDWATCH_LOG_STREAM: joi.string().default("application"),
 		NODE_ENV: joi.string().default("development"),
 	})
@@ -66,6 +68,7 @@ if (error) {
 const envVars: EnvVars = value;
 
 export const envs = {
+	serviceName: envVars.SERVICE_NAME,
 	dbHost: envVars.DB_HOST,
 	dbPort: envVars.DB_PORT,
 	dbUsername: envVars.DB_USERNAME,
