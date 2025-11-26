@@ -1,0 +1,7 @@
+{
+	"*.{js,ts,json}": [
+		"biome format --write --no-errors-on-unmatched",
+		"biome check --write --no-errors-on-unmatched"
+	],
+	"*.ts": ["tsc --noEmit --skipLibCheck"]
+}
