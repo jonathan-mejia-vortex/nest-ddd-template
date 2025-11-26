@@ -63,7 +63,7 @@ src/
 1. **Clonar el repositorio**
 ```bash
 git clone <repository-url>
-cd ms-auth
+cd nest-ddd-template
 ```
 
 2. **Instalar dependencias**
