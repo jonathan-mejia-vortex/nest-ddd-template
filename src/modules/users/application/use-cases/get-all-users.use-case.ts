@@ -1,20 +1,24 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
+import type { User } from "../../domain/entities/user.entity";
 import {
-  IUserRepository,
-  USER_REPOSITORY,
-  PaginatedResult,
-  PaginationOptions,
-} from '../../domain/repositories/user.repository.interface';
-import { User } from '../../domain/entities/user.entity';
+	USER_REPOSITORY,
+	type IUserRepository,
+	type PaginatedResult,
+	type PaginationOptions,
+} from "../../domain/repositories/user.repository.interface";
 
 @Injectable()
 export class GetAllUsersUseCase {
-  constructor(
-    @Inject(USER_REPOSITORY)
-    private readonly userRepository: IUserRepository,
-  ) {}
+	private readonly userRepository: IUserRepository;
 
-  async execute(options?: PaginationOptions): Promise<PaginatedResult<User>> {
-    return await this.userRepository.findAll(options);
-  }
+	constructor(
+		@Inject(USER_REPOSITORY)
+		userRepository: IUserRepository
+	) {
+		this.userRepository = userRepository;
+	}
+
+	async execute(options?: PaginationOptions): Promise<PaginatedResult<User>> {
+		return await this.userRepository.findAll(options);
+	}
 }

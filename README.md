@@ -115,12 +115,12 @@ createdb auth_db_test
 
 5. **Generar cliente de Prisma**
 ```bash
-npm run prisma:generate
+yarn prisma:generate
 ```
 
 6. **Aplicar migraciones (dev)**
 ```bash
-npm run prisma:push
+yarn prisma:push
 # O crear migración:
 npx prisma migrate dev --name init
 ```
@@ -129,33 +129,32 @@ npx prisma migrate dev --name init
 
 ### Desarrollo
 ```bash
-npm run start:dev          # Iniciar en modo desarrollo
-npm run start:debug        # Iniciar con debugger
-npm run build              # Compilar proyecto
-npm run start:prod         # Iniciar en producción
+yarn start:dev          # Iniciar en modo desarrollo
+yarn start:debug        # Iniciar con debugger
+yarn build              # Compilar proyecto
+yarn start:prod         # Iniciar en producción
 ```
 
 ### Base de Datos (Prisma)
 ```bash
-npm run prisma:generate                # Generar cliente de Prisma
-npm run prisma:push                    # Push schema sin migración (dev)
-npm run prisma:migrate                 # Crear y aplicar migración
-npm run prisma:migrate:deploy          # Aplicar migraciones (producción)
-npm run prisma:studio                  # Abrir Prisma Studio (GUI)
+yarn prisma:generate                # Generar cliente de Prisma
+yarn prisma:push                    # Push schema sin migración (dev)
+yarn prisma:migrate                 # Crear y aplicar migración
+yarn prisma:migrate:deploy          # Aplicar migraciones (producción)
+yarn prisma:studio                  # Abrir Prisma Studio (GUI)
 ```
 
 ### Testing
 ```bash
-npm run test               # Tests unitarios
-npm run test:watch         # Tests en modo watch
-npm run test:cov           # Tests con coverage
-npm run test:e2e           # Tests end-to-end
+yarn test               # Tests unitarios
+yarn test:watch         # Tests en modo watch
+yarn test:cov           # Tests con coverage
+yarn test:e2e           # Tests end-to-end
 ```
 
 ### Calidad de Código
 ```bash
-npm run lint               # Linter
-npm run format             # Format con Prettier
+yarn biome
 ```
 
 ## 🔐 Autenticación
@@ -220,17 +219,17 @@ Authorization: Bearer <token>
 
 ### Tests Unitarios
 ```bash
-npm run test
+yarn test
 
 # Tests específicos
-npm run test -- auth.service
-npm run test -- user.entity
+yarn test -- auth.service
+yarn test -- user.entity
 ```
 
 ### Tests E2E
 ```bash
 # Requiere base de datos de test configurada
-npm run test:e2e
+yarn test:e2e
 ```
 
 ## 🐳 Docker
@@ -264,13 +263,13 @@ Las migraciones se manejan con Prisma CLI:
 npx prisma migrate dev --name add-new-field
 
 # Aplicar migraciones (producción)
-npm run prisma:migrate:deploy
+yarn prisma:migrate:deploy
 
 # Push schema sin migración (desarrollo)
-npm run prisma:push
+yarn prisma:push
 
 # Visualizar base de datos
-npm run prisma:studio
+yarn prisma:studio
 ```
 
 Schema: `prisma/schema.prisma`  
