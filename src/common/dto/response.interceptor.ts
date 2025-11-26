@@ -51,6 +51,7 @@ export class ResponseInterceptor implements NestInterceptor {
 		logger.error(
 			`ENDPOINT_PATH: ${request.url} \n CAUSE: ${cause?.message || message} \n STACK_ERROR: ${exception.stack}`
 		);
+		const version = this.extractVersion(request.url);
 		response.status(status).json({
 			path: request.url,
 			error: cause?.details || "ServerUnexpectedError",
@@ -58,6 +59,7 @@ export class ResponseInterceptor implements NestInterceptor {
 			meta: {
 				correlationId: request.correlationId,
 				timestamp: new Date().toISOString(),
+				...(version && { version }),
 			},
 		});
 	}
@@ -65,10 +67,21 @@ export class ResponseInterceptor implements NestInterceptor {
 	responseHandler(res: unknown, context: ExecutionContext) {
 		const ctx = context.switchToHttp();
 		const request = ctx.getRequest();
+		const version = this.extractVersion(request.url);
 
 		return {
 			path: request.url,
 			result: res,
+			meta: {
+				correlationId: request.correlationId,
+				timestamp: new Date().toISOString(),
+				...(version && { version }),
+			},
 		};
+	}
+
+	private extractVersion(path: string): string | null {
+		const versionMatch = path.match(/\/(v\d+)\//);
+		return versionMatch ? versionMatch[1] : null;
 	}
 }
