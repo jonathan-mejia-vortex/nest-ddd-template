@@ -1,10 +1,10 @@
 {
-	"name": "be-template",
-	"version": "0.0.1",
-	"description": "",
-	"author": "",
-	"private": true,
-	"license": "UNLICENSED",
+	 "name": "nest-ddd-template",
+  "version": "1.0.0",
+  "description": "Template NestJS con arquitectura DDD + Hexagonal, Prisma, JWT, Observabilidad y mejores prácticas",
+  "author": "",
+  "private": true,
+  "license": "MIT",
 	"scripts": {
 		"build": "nest build",
 		"start": "node dist/main",
