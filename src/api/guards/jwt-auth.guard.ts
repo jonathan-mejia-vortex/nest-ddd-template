@@ -1,9 +1,7 @@
 import type { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
 import { JwtService } from "@nestjs/jwt";
-import type { Request } from "express";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { Request } from "express";
 import { GetAuthByIdUseCase } from "../../modules/auth/application/use-cases/get-auth-by-id.use-case";
 
 /**

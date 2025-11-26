@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as CircuitBreaker from "opossum";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
 import { CircuitBreakerService } from "./circuit-breaker.service";
 
 export interface HttpClientConfig {

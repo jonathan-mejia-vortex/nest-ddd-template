@@ -53,7 +53,8 @@
 			},
 			"style": {
 				"noNegationElse": "off",
-				"useConst": "error"
+				"useConst": "error",
+				"useImportType": "off"
 			}
 		}
 	},

@@ -6,15 +6,11 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import type { CreateAuthDto } from "../../modules/auth/application/dto/create-auth.dto";
-import type { LoginDto } from "../../modules/auth/application/dto/login.dto";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
+import { CreateAuthDto } from "../../modules/auth/application/dto/create-auth.dto";
+import { LoginDto } from "../../modules/auth/application/dto/login.dto";
 import { CreateAuthUseCase } from "../../modules/auth/application/use-cases/create-auth.use-case";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
 import { LoginUseCase } from "../../modules/auth/application/use-cases/login.use-case";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
 import { ValidateUserUseCase } from "../../modules/auth/application/use-cases/validate-user.use-case";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
 import { TransactionService } from "../../shared/infrastructure/persistence/transaction.service";
 
 /**

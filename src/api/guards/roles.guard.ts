@@ -1,6 +1,5 @@
 import type { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Injectable } from "@nestjs/common";
-// biome-ignore lint/style/useImportType: Required for NestJS DI metadata
 import { Reflector } from "@nestjs/core";
 import type { ROLE } from "../../common/types";
 

@@ -36,12 +36,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./
 
-# Copiar script de inicio
-COPY --from=builder /app/start-railway.sh ./
-
-# Hacer ejecutable el script de inicio
-RUN chmod +x start-railway.sh
-
 # Exponer puerto
 EXPOSE 3000
 
@@ -49,4 +43,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Comando de inicio
-# CMD ["./start-railway.sh"]
+CMD ["node", "dist/main.js"]
