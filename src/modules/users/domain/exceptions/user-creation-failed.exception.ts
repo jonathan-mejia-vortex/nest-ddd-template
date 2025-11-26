@@ -3,7 +3,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 export class UserCreationFailedException extends DomainException {
 	constructor(reason?: string) {
 		super(
-			"USER_CREATION_FAILED",
+			"UserCreationFailed",
 			reason ? `Error al crear usuario: ${reason}` : "Error al crear usuario"
 		);
 	}

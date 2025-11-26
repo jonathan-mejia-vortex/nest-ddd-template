@@ -23,7 +23,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
 			timestamp: new Date().toISOString(),
 			path: request.url,
 			error: {
-				code: exception.code,
+				code: exception.details,
 				message: exception.message,
 				details: exception.details,
 			},
@@ -40,6 +40,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
 			USER_CREATION_FAILED: HttpStatus.BAD_REQUEST,
 		};
 
-		return errorMapping[exception.code] || HttpStatus.BAD_REQUEST;
+		return errorMapping[exception.details] || HttpStatus.BAD_REQUEST;
 	}
 }

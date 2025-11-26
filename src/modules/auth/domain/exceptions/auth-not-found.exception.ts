@@ -3,7 +3,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 export class AuthNotFoundException extends DomainException {
 	constructor(identifier?: string) {
 		super(
-			"AUTH_NOT_FOUND",
+			"AuthNotFound",
 			identifier
 				? `Credencial con identificador ${identifier} no encontrada`
 				: "Credencial no encontrada"
