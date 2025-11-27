@@ -1,17 +1,12 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 
 export abstract class DomainException extends HttpException {
-	constructor(
-		public readonly details: string,
-		public override readonly message: string
-	) {
-		super(message, HttpStatus.BAD_REQUEST, {
-			cause: {
-				details,
-				message,
-			},
-		});
-		this.name = this.constructor.name;
+	constructor(details: string, message: string, status?: HttpStatus) {
+		super(message, status || HttpStatus.BAD_REQUEST);
+		this.cause = {
+			details,
+			message,
+		};
 		Error.captureStackTrace(this, this.constructor);
 	}
 }
