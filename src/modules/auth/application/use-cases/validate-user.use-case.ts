@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { User } from "../../../users/domain/entities/user.entity";
 import {
-	type IUserRepository,
 	USER_REPOSITORY,
+	type IUserRepository,
 } from "../../../users/domain/repositories/user.repository.interface";
 import { AuthNotFoundException } from "../../domain/exceptions/auth-not-found.exception";
 import { InvalidCredentialsException } from "../../domain/exceptions/invalid-credentials.exception";
@@ -10,7 +10,7 @@ import {
 	AUTH_REPOSITORY,
 	type IAuthRepository,
 } from "../../domain/repositories/auth.repository.interface";
-import type { PasswordService } from "../../domain/services/password.service";
+import { PASSWORD_SERVICE, type IPasswordService } from "../../domain/services/password.service";
 
 export interface ValidateUserCommand {
 	email: string;
@@ -24,7 +24,8 @@ export class ValidateUserUseCase {
 		private readonly authRepository: IAuthRepository,
 		@Inject(USER_REPOSITORY)
 		private readonly userRepository: IUserRepository,
-		private readonly passwordService: PasswordService
+		@Inject(PASSWORD_SERVICE)
+		private readonly passwordService: IPasswordService
 	) {}
 
 	async execute(command: ValidateUserCommand): Promise<User> {

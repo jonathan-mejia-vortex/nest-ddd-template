@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as CircuitBreaker from "opossum";
-import type { CircuitBreakerService } from "./circuit-breaker.service";
+import { CircuitBreakerService } from "./circuit-breaker.service";
 
 export interface HttpClientConfig {
 	baseUrl: string;

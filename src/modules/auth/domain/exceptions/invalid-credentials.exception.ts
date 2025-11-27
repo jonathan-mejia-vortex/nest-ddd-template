@@ -2,6 +2,6 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 
 export class InvalidCredentialsException extends DomainException {
 	constructor() {
-		super("INVALID_CREDENTIALS", "Credenciales inválidas");
+		super("InvalidCredentials", "Credenciales inválidas");
 	}
 }

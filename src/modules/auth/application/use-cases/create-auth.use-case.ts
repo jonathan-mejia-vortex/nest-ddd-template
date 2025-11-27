@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import type {
+import {
 	CreateUserCommand,
 	CreateUserUseCase,
 } from "../../../users/application/use-cases/create-user.use-case";
@@ -10,7 +10,7 @@ import {
 	AUTH_REPOSITORY,
 	type IAuthRepository,
 } from "../../domain/repositories/auth.repository.interface";
-import type { PasswordService } from "../../domain/services/password.service";
+import { PASSWORD_SERVICE, type IPasswordService } from "../../domain/services/password.service";
 
 export interface CreateAuthCommand {
 	email: string;
@@ -24,7 +24,8 @@ export class CreateAuthUseCase {
 	constructor(
 		@Inject(AUTH_REPOSITORY)
 		private readonly authRepository: IAuthRepository,
-		private readonly passwordService: PasswordService,
+		@Inject(PASSWORD_SERVICE)
+		private readonly passwordService: IPasswordService,
 		private readonly createUserUseCase: CreateUserUseCase
 	) {}
 

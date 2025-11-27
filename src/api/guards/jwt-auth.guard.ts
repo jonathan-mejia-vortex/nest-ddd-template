@@ -1,8 +1,8 @@
 import type { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import type { JwtService } from "@nestjs/jwt";
-import type { Request } from "express";
-import type { GetAuthByIdUseCase } from "../../modules/auth/application/use-cases/get-auth-by-id.use-case";
+import { JwtService } from "@nestjs/jwt";
+import { Request } from "express";
+import { GetAuthByIdUseCase } from "../../modules/auth/application/use-cases/get-auth-by-id.use-case";
 
 /**
  * JwtAuthGuard custom - Sin Passport
@@ -35,7 +35,7 @@ export class JwtAuthGuard implements CanActivate {
 			}
 
 			// Adjuntar usuario al request para acceso en controllers
-			request.user = {
+			(request as Request & { user: { id: string; authId: string; role: string } }).user = {
 				id: payload.userId,
 				authId: payload.authId,
 				role: payload.role,

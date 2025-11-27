@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
+import { ResponseInterceptor } from "../common/dto/response.interceptor";
 import { AuthModule } from "../modules/auth/auth.module";
 import { UserModule } from "../modules/users/user.module";
 import { SharedModule } from "../shared/shared.module";
-import { HealthModule } from "./health/health.module";
 import { AuthController } from "./controllers/auth.controller";
 import { UsersController } from "./controllers/users.controller";
 import { IdempotencyGuard } from "./guards/idempotency.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RolesGuard } from "./guards/roles.guard";
+import { HealthModule } from "./health/health.module";
 import { CorrelationIdInterceptor } from "./interceptors/correlation-id.interceptor";
 import { LoggingInterceptor } from "./interceptors/logging.interceptor";
 import { MetricsInterceptor } from "./interceptors/metrics.interceptor";
-import { ResponseInterceptor } from "./interceptors/response.interceptor";
 
 /**
  * ApiModule - Módulo de la capa de API

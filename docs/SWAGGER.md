@@ -20,8 +20,8 @@ La configuración de Swagger está en `src/main.ts`:
 
 ```typescript
 const config = new DocumentBuilder()
-  .setTitle('MS-Auth API')
-  .setDescription('Microservicio de Autenticación y Autorización - DDD + Hexagonal')
+  .setTitle('Nest DDD Microservice Template API')
+  .setDescription('Template de microservicio con NestJS utilizando DDD + Arquitectura Hexagonal')
   .setVersion('1.0.0')
   .addTag('Auth')
   .addTag('Users')

@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import type { HealthIndicatorService } from "@nestjs/terminus";
-import type { PrismaService } from "../../../shared/infrastructure/persistence/prisma.service";
+// biome-ignore lint/style/useImportType: HealthIndicatorService must remain a runtime value for NestJS DI metadata
+import { HealthIndicatorService } from "@nestjs/terminus";
+// biome-ignore lint/style/useImportType: PrismaService must remain a runtime value for NestJS DI metadata
+import { PrismaService } from "../../../shared/infrastructure/persistence/prisma.service";
 
 @Injectable()
 export class PrismaHealthIndicator {

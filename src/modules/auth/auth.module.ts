@@ -7,7 +7,7 @@ import { GetAuthByIdUseCase } from "./application/use-cases/get-auth-by-id.use-c
 import { LoginUseCase } from "./application/use-cases/login.use-case";
 import { ValidateUserUseCase } from "./application/use-cases/validate-user.use-case";
 import { AUTH_REPOSITORY } from "./domain/repositories/auth.repository.interface";
-import { PasswordService } from "./domain/services/password.service";
+import { PASSWORD_SERVICE, PasswordService } from "./domain/services/password.service";
 import { AuthRepositoryImpl } from "./infrastructure/persistence/prisma/auth.repository.impl";
 
 /**
@@ -28,7 +28,10 @@ import { AuthRepositoryImpl } from "./infrastructure/persistence/prisma/auth.rep
 			provide: AUTH_REPOSITORY,
 			useClass: AuthRepositoryImpl,
 		},
-		PasswordService,
+		{
+			provide: PASSWORD_SERVICE,
+			useClass: PasswordService,
+		},
 		CreateAuthUseCase,
 		ValidateUserUseCase,
 		LoginUseCase,
@@ -36,11 +39,11 @@ import { AuthRepositoryImpl } from "./infrastructure/persistence/prisma/auth.rep
 	],
 	exports: [
 		AUTH_REPOSITORY,
+		PASSWORD_SERVICE,
 		CreateAuthUseCase,
 		ValidateUserUseCase,
 		LoginUseCase,
 		GetAuthByIdUseCase,
-		PasswordService,
 	],
 })
 export class AuthModule {}

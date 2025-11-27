@@ -1,6 +1,7 @@
-# Microservicio Auth - Arquitectura DDD + Hexagonal
+# Nest DDD Microservice Template - Arquitectura DDD + Hexagonal
 
-Microservicio de autenticación y autorización construido con **NestJS** siguiendo los principios de **Domain-Driven Design (DDD)** y **Arquitectura Hexagonal**.
+Template de microservicio backend construido con **NestJS** siguiendo los principios de **Domain-Driven Design (DDD)** y **Arquitectura Hexagonal**.  
+Está pensado como base para despliegues rápidos de futuros microservicios (no solo de autenticación).
 
 ## 🏗️ Arquitectura
 
@@ -79,15 +80,15 @@ cp .env.example .env
 
 Variables requeridas:
 ```env
-# Database (Prisma)
-DATABASE_URL="postgresql://postgres:your_password@localhost:5432/auth_db?schema=public"
+# Database (Prisma) - ajusta nombres a tu microservicio
+DATABASE_URL="postgresql://postgres:your_password@localhost:5432/my_service_db?schema=public"
 
 # Database individual params (para referencia)
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=your_password
-DB_DATABASE=auth_db
+DB_DATABASE=my_service_db
 
 # Test Database
 DB_TEST_HOST=localhost
@@ -107,10 +108,10 @@ PORT=3000
 NODE_ENV=development
 ```
 
-4. **Crear base de datos**
+4. **Crear base de datos (ejemplo)**
 ```bash
-createdb auth_db
-createdb auth_db_test
+createdb my_service_db
+createdb my_service_db_test
 ```
 
 5. **Generar cliente de Prisma**

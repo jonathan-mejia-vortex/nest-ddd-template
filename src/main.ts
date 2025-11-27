@@ -47,7 +47,7 @@ async function bootstrap() {
 	app.enableCors();
 
 	await app.listen(process.env.PORT ?? 3000);
-	logger.log(`Auth microservice running on port: ${envs.port}`);
+	logger.log(`Microservice running on port: ${envs.port}`);
 	logger.log(`Environment: ${envs.nodeEnv}`);
 	logger.log(`Documentation available at http://localhost:${envs.port}/docs`);
 }

@@ -1,12 +1,15 @@
-import { Injectable, type OnModuleInit, type OnModuleDestroy, Logger } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
+import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
+import { type Prisma, PrismaClient } from "@prisma/client";
 
 /**
  * PrismaService - Singleton de conexión a Prisma
  * Sigue la guía oficial de NestJS: https://docs.nestjs.com/recipes/prisma
  */
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+	extends PrismaClient<Prisma.PrismaClientOptions, "query">
+	implements OnModuleInit, OnModuleDestroy
+{
 	private readonly logger = new Logger(PrismaService.name);
 
 	constructor() {

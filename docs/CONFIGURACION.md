@@ -126,7 +126,7 @@ await this.metricsService.recordDatabaseQueryDuration('findAll', 150);
 await this.metricsService.recordCacheHitRate(true);
 ```
 
-**Namespace**: `MS-Auth`  
+**Namespace**: `Nest-DDD-Microservice-Template`  
 **Flush**: Cada 1 minuto o 20 métricas
 
 ### Tracing (OpenTelemetry + X-Ray)
