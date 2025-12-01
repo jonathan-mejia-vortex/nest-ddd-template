@@ -21,7 +21,6 @@ export class CreateUserUseCase {
 
 	async execute(command: CreateUserCommand, transaction?: unknown): Promise<User> {
 		const user = User.create(uuidv4(), command.name, command.authId, command.role || UserRole.USER);
-
 		return await this.userRepository.create(user, transaction);
 	}
 }

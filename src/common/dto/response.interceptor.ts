@@ -24,6 +24,7 @@ export class ResponseInterceptor implements NestInterceptor {
 			exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 		const isBadRequest = exception instanceof BadRequestException;
 		let message = "SERVER_UNEXPECTED_ERROR";
+
 		const cause = exception.cause as { details: string; message: string };
 
 		if (exception instanceof HttpException) {
@@ -42,11 +43,6 @@ export class ResponseInterceptor implements NestInterceptor {
 			} else if (isHttpException) {
 				message = errorResponse;
 			}
-		}
-		if (process.env.NODE_ENV !== "test") {
-			logger.error(
-				`\n ENDPOINT_PATH: ${request.url} \n CAUSE: ${cause?.message || message} \n STACK_ERROR: ${exception.stack}`
-			);
 		}
 		logger.error(
 			`ENDPOINT_PATH: ${request.url} \n CAUSE: ${cause?.message || message} \n STACK_ERROR: ${exception.stack}`

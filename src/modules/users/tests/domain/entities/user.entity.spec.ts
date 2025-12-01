@@ -1,5 +1,5 @@
-import { User } from "./user.entity";
-import { UserRole } from "../../../../common/types";
+import { UserRole } from "../../../../../common/types";
+import { User } from "../../../domain/entities/user.entity";
 
 describe("User Entity", () => {
 	describe("create", () => {

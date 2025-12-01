@@ -1,7 +1,8 @@
+import { HttpStatus } from "@nestjs/common";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
 export class InvalidCredentialsException extends DomainException {
 	constructor() {
-		super("InvalidCredentials", "Credenciales inválidas");
+		super("InvalidCredentials", "Credenciales inválidas", HttpStatus.UNAUTHORIZED);
 	}
 }

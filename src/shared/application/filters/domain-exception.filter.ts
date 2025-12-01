@@ -23,23 +23,21 @@ export class DomainExceptionFilter implements ExceptionFilter {
 			timestamp: new Date().toISOString(),
 			path: request.url,
 			error: {
-				code: exception.details,
-				message: exception.message,
-				details: exception.details,
+				code: (exception.cause as { code: string }).code,
+				message: (exception.cause as unknown as { message: string }).message,
 			},
 		});
 	}
 
 	private mapDomainExceptionToHttpStatus(exception: DomainException): number {
-		const errorMapping: Record<string, number> = {
-			USER_NOT_FOUND: HttpStatus.NOT_FOUND,
-			AUTH_NOT_FOUND: HttpStatus.NOT_FOUND,
-			NOT_FOUND: HttpStatus.NOT_FOUND,
-			INVALID_CREDENTIALS: HttpStatus.UNAUTHORIZED,
-			EMAIL_ALREADY_EXISTS: HttpStatus.CONFLICT,
-			USER_CREATION_FAILED: HttpStatus.BAD_REQUEST,
+		const cause = exception.cause as unknown as { code: string; message: string };
+		const errorMapping: Record<keyof typeof cause, number> = {
+			code: HttpStatus.BAD_REQUEST,
+			message: HttpStatus.BAD_REQUEST,
 		};
 
-		return errorMapping[exception.details] || HttpStatus.BAD_REQUEST;
+		return (
+			errorMapping[cause.code as unknown as keyof typeof errorMapping] || HttpStatus.BAD_REQUEST
+		);
 	}
 }

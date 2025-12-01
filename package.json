@@ -16,6 +16,10 @@
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+		"test:integration:up": "docker-compose -f docker-compose.test.yml up -d && echo 'Waiting for PostgreSQL...' && sleep 5",
+		"test:integration": "cross-env DATABASE_URL=postgresql://postgres:postgres@localhost:5434/test_db DB_HOST=localhost DB_PORT=5434 DB_USERNAME=postgres DB_PASSWORD=postgres DB_DATABASE=test_db JWT_SECRET=test-secret-key JWT_EXPIRES_IN=86400 PORT=3000 REDIS_HOST=localhost REDIS_PORT=6380 NODE_ENV=test yarn prisma:push && cross-env DATABASE_URL=postgresql://postgres:postgres@localhost:5434/test_db DB_HOST=localhost DB_PORT=5434 DB_USERNAME=postgres DB_PASSWORD=postgres DB_DATABASE=test_db JWT_SECRET=test-secret-key JWT_EXPIRES_IN=86400 PORT=3000 REDIS_HOST=localhost REDIS_PORT=6380 NODE_ENV=test jest --config ./src/api/tests/controllers/integration/jest-integration.json --runInBand --forceExit",
+		"test:integration:down": "docker-compose -f docker-compose.test.yml down -v",
+		"test:integration:run": "yarn test:integration:up && yarn test:integration && yarn test:integration:down",
 		"format": "biome format . --write",
 		"lint": "biome check . --write",
 		"lint:check": "biome check .",
@@ -87,12 +91,43 @@
 		"moduleFileExtensions": ["js", "json", "ts"],
 		"rootDir": "src",
 		"testRegex": ".*\\.spec\\.ts$",
+		"testPathIgnorePatterns": ["\\.integration\\.spec\\.ts$"],
 		"transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
 		},
 		"transformIgnorePatterns": ["node_modules/(?!uuid)"],
-		"collectCoverageFrom": ["**/*.(t|j)s"],
+		"collectCoverageFrom": [
+			"**/*.(t|j)s",
+			"!**/*.spec.ts",
+			"!**/*.e2e-spec.ts",
+			"!**/node_modules/**",
+			"!**/main.ts",
+			"!**/tracing.ts",
+			"!**/*.module.ts",
+			"!**/*.dto.ts",
+			"!**/infrastructure/persistence/**",
+			"!**/infrastructure/logging/**",
+			"!**/infrastructure/metrics/**",
+			"!**/infrastructure/messaging/**",
+			"!**/infrastructure/http/**",
+			"!**/infrastructure/cache/**",
+			"!**/infrastructure/idempotency/**",
+			"!**/config/**",
+			"!**/health/**",
+			"!**/common/dto/**",
+			"!**/shared/application/filters/**",
+			"!**/api/interceptors/metrics.interceptor.ts"
+		],
 		"coverageDirectory": "../coverage",
+		"coverageThreshold": {
+			"global": {
+				"branches": 80,
+				"functions": 80,
+				"lines": 80,
+				"statements": 80
+			}
+		},
+		"coverageReporters": ["text", "lcov", "html"],
 		"testEnvironment": "node"
 	},
 	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"

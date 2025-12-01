@@ -1,11 +1,11 @@
 import { Test, type TestingModule } from "@nestjs/testing";
-import { UserRole } from "../../../../common/types";
-import { User } from "../../domain/entities/user.entity";
+import { UserRole } from "../../../../../common/types";
+import { CreateUserUseCase } from "../../../application/use-cases/create-user.use-case";
+import { User } from "../../../domain/entities/user.entity";
 import {
 	type IUserRepository,
 	USER_REPOSITORY,
-} from "../../domain/repositories/user.repository.interface";
-import { CreateUserUseCase } from "./create-user.use-case";
+} from "../../../domain/repositories/user.repository.interface";
 
 describe("CreateUserUseCase", () => {
 	let useCase: CreateUserUseCase;
