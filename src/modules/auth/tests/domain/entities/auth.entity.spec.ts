@@ -1,4 +1,4 @@
-import { Auth } from "./auth.entity";
+import { Auth } from "../../../domain/entities/auth.entity";
 
 describe("Auth Entity", () => {
 	describe("create", () => {
